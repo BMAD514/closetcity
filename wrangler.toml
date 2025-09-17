@@ -5,7 +5,7 @@ compatibility_date = "2024-09-17"
 # D1 Database binding
 [[d1_databases]]
 binding = "DB"
-database_name = "closetcity-db"
+database_name = "closet-db"
 database_id = "your-d1-database-id-here"
 
 # R2 Storage binding
