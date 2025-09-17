@@ -1,0 +1,21 @@
+# Cloudflare Pages configuration for closet.city
+name = "closetcity"
+compatibility_date = "2024-09-17"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "closetcity-db"
+database_id = "your-d1-database-id-here"
+
+# R2 Storage binding
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "closetcity-storage"
+
+# Environment variables (set these in Cloudflare Pages dashboard)
+[vars]
+PROMPT_VERSION = "v1"
+
+# Secrets (set these in Cloudflare Pages dashboard under Environment Variables)
+# GEMINI_API_KEY = "your-gemini-api-key-here"

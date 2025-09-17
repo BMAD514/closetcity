@@ -1,36 +1,313 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# closet.city - Virtual Try-On Resale Platform
 
-## Getting Started
+A minimal full-stack virtual try-on platform for resale fashion, built with Next.js and Cloudflare services.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Virtual Try-On**: AI-powered garment visualization using Google Gemini
+- **Pose Generation**: Generate different poses and angles from try-on results
+- **Smart Caching**: Deterministic caching to avoid regenerating identical requests
+- **File Upload**: Secure image upload to Cloudflare R2 storage
+- **Edge Runtime**: Optimized for Cloudflare Pages with edge functions
+
+## 🛠 Tech Stack
+
+- **Frontend**: Next.js 15 with React 19, TypeScript, TailwindCSS
+- **Backend**: Cloudflare Pages Functions (API routes under `/api`)
+- **Database**: Cloudflare D1 (SQLite)
+- **Storage**: Cloudflare R2 for images
+- **AI**: Google Gemini 2.5 Flash (server-side only)
+- **Payments**: Stripe Checkout (placeholder ready)
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── api/
+│   │   ├── upload/route.ts      # File upload endpoint
+│   │   ├── tryon/route.ts       # Virtual try-on generation
+│   │   ├── pose/route.ts        # Pose generation
+│   │   ├── checkout/route.ts    # Stripe placeholder
+│   │   └── r2/[key]/route.ts    # R2 file proxy
+│   ├── dashboard/page.tsx       # Main dashboard UI
+│   └── page.tsx                 # Home page
+├── lib/
+│   ├── utils.ts                 # Core utility functions
+│   ├── constants.ts             # AI prompts and constants
+│   └── types.ts                 # TypeScript definitions
+├── schema.sql                   # Database schema
+└── wrangler.toml               # Cloudflare configuration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Quick Start
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Clone and Install
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+git clone <repository-url>
+cd closetcity
+npm install
+```
 
-## Learn More
+### 2. Set Up Cloudflare Services
 
-To learn more about Next.js, take a look at the following resources:
+#### Create D1 Database
+```bash
+npx wrangler d1 create closetcity-db
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Copy the database ID and update `wrangler.toml`:
+```toml
+[[d1_databases]]
+binding = "DB"
+database_name = "closetcity-db"
+database_id = "your-database-id-here"
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### Apply Database Schema
+```bash
+npx wrangler d1 execute closetcity-db --file=./schema.sql
+```
 
-## Deploy on Vercel
+#### Create R2 Bucket
+```bash
+npx wrangler r2 bucket create closetcity-storage
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. Configure Environment Variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### Get Google Gemini API Key
+1. Go to [Google AI Studio](https://aistudio.google.com/)
+2. Create a new API key
+3. Copy the key for use in environment variables
+
+#### Set Environment Variables in Cloudflare Pages
+
+In your Cloudflare Pages dashboard, go to Settings → Environment Variables and add:
+
+**Variables:**
+- `PROMPT_VERSION` = `v1`
+
+**Secrets:**
+- `GEMINI_API_KEY` = `your-gemini-api-key-here`
+
+### 4. Configure Bindings
+
+In Cloudflare Pages → Functions → Bindings, add:
+
+**D1 Database:**
+- Variable name: `DB`
+- D1 database: `closetcity-db`
+
+**R2 Bucket:**
+- Variable name: `R2`
+- R2 bucket: `closetcity-storage`
+
+### 5. Deploy to Cloudflare Pages
+
+```bash
+npm run build
+npx @cloudflare/next-on-pages
+```
+
+Then deploy the `dist` folder to Cloudflare Pages.
+
+## 🔧 Development
+
+### Local Development
+```bash
+npm run dev
+```
+
+### Build for Production
+```bash
+npm run build
+npm run pages:build
+```
+
+### Local Testing with Cloudflare
+```bash
+npm run pages:dev
+```
+
+## 📋 API Endpoints
+
+### POST `/api/upload`
+Upload model or garment images.
+
+**Request:**
+```typescript
+FormData {
+  file: File,
+  kind: 'model' | 'garment'
+}
+```
+
+**Response:**
+```typescript
+{
+  success: boolean,
+  url: string,
+  error?: string
+}
+```
+
+### POST `/api/tryon`
+Generate virtual try-on images.
+
+**Request:**
+```typescript
+{
+  modelUrl: string,
+  garmentUrl: string,
+  poseKey: 'front' | 'three_quarter' | 'side' | 'back'
+}
+```
+
+**Response:**
+```typescript
+{
+  success: boolean,
+  url: string,
+  cached: boolean,
+  error?: string
+}
+```
+
+### POST `/api/pose`
+Generate different poses from existing try-on results.
+
+**Request:**
+```typescript
+{
+  outfitUrl: string,
+  poseKey: 'front' | 'three_quarter' | 'side' | 'back'
+}
+```
+
+**Response:**
+```typescript
+{
+  success: boolean,
+  url: string,
+  cached: boolean,
+  error?: string
+}
+```
+
+### POST `/api/checkout`
+Stripe checkout placeholder (ready for integration).
+
+**Request:**
+```typescript
+{
+  garmentId?: string,
+  priceId?: string,
+  quantity?: number
+}
+```
+
+**Response:**
+```typescript
+{
+  ok: boolean,
+  message: string
+}
+```
+
+## 🎨 AI Prompts
+
+The system uses versioned prompts for consistent results:
+
+### Try-On Prompt (v1)
+```
+Task: Apply the provided garment image to the supplied model image.
+- Replace visible clothing with the supplied garment.
+- Preserve person identity, pose, and background.
+- Preserve visible defects (pilling, fading) — do NOT beautify.
+- Respect layering overlaps naturally (collars/hems).
+- Match lighting, folds, and scale realistically.
+Output image only. PromptVersion: v1
+```
+
+### Pose Prompt Template
+```
+Regenerate from pose: {POSE_KEY}. Preserve person, current outfit, background & lighting. Keep materials/defects identical. Output image only. PromptVersion: v1
+```
+
+## 🗄 Database Schema
+
+```sql
+-- Users table
+CREATE TABLE users(
+  id TEXT PRIMARY KEY,
+  created_at INTEGER DEFAULT (strftime('%s','now'))
+);
+
+-- Garments table
+CREATE TABLE garments(
+  id TEXT PRIMARY KEY,
+  owner_id TEXT,
+  title TEXT,
+  brand TEXT,
+  size TEXT,
+  image_url TEXT NOT NULL,
+  created_at INTEGER DEFAULT (strftime('%s','now'))
+);
+
+-- Cache table for AI-generated images
+CREATE TABLE pose_cache(
+  cache_key TEXT PRIMARY KEY,
+  image_url TEXT NOT NULL,
+  prompt_version TEXT,
+  created_at INTEGER DEFAULT (strftime('%s','now'))
+);
+```
+
+## 🔒 Security & Limitations
+
+- **File Size**: Maximum 8MB per upload
+- **File Types**: JPEG, PNG, WebP only
+- **API Timeout**: 30 seconds for AI generation
+- **Secrets**: Gemini API key is server-side only
+- **Caching**: Deterministic caching prevents duplicate AI calls
+
+## 🚧 TODOs
+
+### Stripe Integration
+- [ ] Add real Stripe Checkout session creation
+- [ ] Implement webhook handlers for payment events
+- [ ] Add customer and order management
+
+### Production Enhancements
+- [ ] Set up custom R2 domain for direct file serving
+- [ ] Add user authentication and sessions
+- [ ] Implement garment marketplace features
+- [ ] Add image optimization and resizing
+- [ ] Set up monitoring and error tracking
+
+### Performance
+- [ ] Add image CDN and optimization
+- [ ] Implement progressive loading
+- [ ] Add request rate limiting
+- [ ] Optimize AI prompt caching strategy
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📞 Support
+
+For issues and questions:
+- Create an issue in the repository
+- Check the Cloudflare documentation for service-specific help
+- Review the Google Gemini API documentation for AI-related issues
