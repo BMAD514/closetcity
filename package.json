@@ -24,5 +24,13 @@
     "eslint-config-next": "15.5.2",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "@vercel/node": {
+      "esbuild": "0.15.18"
+    },
+    "@vercel/gatsby-plugin-vercel-builder": {
+      "esbuild": "0.15.18"
+    }
   }
 }
