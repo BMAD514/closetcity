@@ -10,6 +10,9 @@ A minimal full-stack virtual try-on platform for resale fashion, built with Next
 - **File Upload**: Secure image upload to Cloudflare R2 storage
 - **Edge Runtime**: Optimized for Cloudflare Pages with edge functions
 
+
+Note: The Virtual Try-On UI now uses the builder’s production components under `src/features/virtualtryon/components`.
+
 ## 🛠 Tech Stack
 
 - **Frontend**: Next.js 15 with React 19, TypeScript, TailwindCSS
@@ -104,14 +107,30 @@ In Cloudflare Pages → Functions → Bindings, add:
 - Variable name: `R2`
 - R2 bucket: `closetcity-storage`
 
+
+### D1 Seed Example
+You can seed a few garments and media to test the shop/product pages:
+
+````sql
+INSERT INTO garments (id, owner_id, title, brand, size, condition, price_cents, image_url)
+VALUES
+  ('g1','u1','Denim Jacket','A.P.C.','M','Good',32000,'https://example.com/flat/apc-denim-1.jpg'),
+  ('g2','u1','Cotton Shirt','COS','M','Like New',19000,'https://example.com/flat/cos-shirt-1.jpg');
+
+INSERT INTO listing_media (id, listing_id, type, url)
+VALUES
+  ('m1','g1','flatlay','https://example.com/flat/apc-denim-1.jpg'),
+  ('m2','g1','tryon','https://example.com/tryon/apc-denim-front.jpg'),
+  ('m3','g1','tryon','https://example.com/tryon/apc-denim-side.jpg');
+````
+
 ### 5. Deploy to Cloudflare Pages
 
-```bash
-npm run build
-npx @cloudflare/next-on-pages
-```
-
-Then deploy the `dist` folder to Cloudflare Pages.
+Use Cloudflare Pages Git integration:
+- Framework preset: Next.js
+- Build command: `npm run build`
+- Build output directory: `.next`
+- Configure bindings in Pages Settings → Functions (DB, R2) and Environment variables (PROMPT_VERSION, GEMINI_API_KEY)
 
 ## 🔧 Development
 
@@ -123,15 +142,47 @@ npm run dev
 ### Build for Production
 ```bash
 npm run build
-npm run pages:build
 ```
 
-### Local Testing with Cloudflare
-```bash
-npm run pages:dev
-```
+
+## User flow
+
+From `/product/[id]`, users can click “Try this on” to open `/virtual-try-on` with the product’s image preselected via the `?garmentUrl=...` query parameter.
 
 ## 📋 API Endpoints
+
+### GET `/api/garments`
+List garments for the shop grid.
+
+Response:
+````json
+{
+  "ok": true,
+  "items": [
+    { "id": "uuid", "brand": "A.P.C.", "title": "Denim Jacket", "price_cents": 32000, "image_url": "https://..." }
+  ]
+}
+````
+
+### GET `/api/garments/[id]`
+Detail with media (flat-lay and try-on).
+
+Response:
+````json
+{
+  "ok": true,
+  "item": {
+    "id": "uuid", "brand": "A.P.C.", "title": "Denim Jacket",
+    "size": "M", "condition": "Good", "price_cents": 32000,
+    "image_url": "https://..."
+  },
+  "media": {
+    "flatlay": ["https://..."],
+    "tryon": ["https://..."]
+  }
+}
+````
+
 
 ### POST `/api/upload`
 Upload model or garment images.
