@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRequestContext } from '@cloudflare/next-on-pages';
 import { Env } from '@/lib/types';
 
 export const runtime = 'edge';
@@ -8,8 +9,8 @@ export async function GET(
   { params }: { params: Promise<{ key: string }> }
 ): Promise<NextResponse> {
   try {
-    // Get Cloudflare bindings
-    const env = process.env as unknown as Env;
+    // Get Cloudflare bindings from Cloudflare runtime
+    const env = getRequestContext().env as unknown as Env;
     
     if (!env.R2) {
       return new NextResponse('R2 storage not configured', { status: 500 });
@@ -39,7 +40,7 @@ export async function GET(
     return new NextResponse(object.body, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000', // Cache for 1 year
+        'Cache-Control': 'public, max-age=31536000, immutable', // Long-lived immutable cache for generated images
         'ETag': object.etag,
       },
     });
