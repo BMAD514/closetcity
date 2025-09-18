@@ -9,8 +9,8 @@
     "build:pages": "npx @cloudflare/next-on-pages@1 build"
   },
   "dependencies": {
-    "next": "15.5.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "next": "15.5.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }
