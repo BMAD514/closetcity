@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import Container from '@/components/Container';
 import Grid from '@/components/Grid';
 import Card from '@/components/Card';
@@ -23,4 +24,5 @@ export default async function ShopPage() {
     </main>
   );
 }
+
 
