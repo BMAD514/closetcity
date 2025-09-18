@@ -1,10 +1,30 @@
-export const config = {
-  compatibility_date: '2024-09-17',
-  compatibility_flags: ['nodejs_compat'],
-};
-
 export async function onRequest(context: any) {
-  // Pass-through middleware; used to apply compatibility flags to Pages preview and production
-  return await context.next();
+  const { request } = context;
+  const origin = request.headers.get('Origin') || '*';
+
+  // Handle CORS preflight
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': origin === 'null' ? '*' : origin,
+        'Access-Control-Allow-Methods': 'GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+        'Access-Control-Max-Age': '86400',
+        'Vary': 'Origin',
+      },
+    });
+  }
+
+  const response = await context.next();
+  const newHeaders = new Headers(response.headers);
+  newHeaders.set('Access-Control-Allow-Origin', origin === 'null' ? '*' : origin);
+  newHeaders.append('Vary', 'Origin');
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: newHeaders,
+  });
 }
 
