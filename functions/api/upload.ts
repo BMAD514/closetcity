@@ -1,4 +1,4 @@
-export const onRequest: PagesFunction = async (context) => {
+export const onRequest = async (context: any) => {
   try {
     const { env, request } = context as unknown as { env: any; request: Request };
     if (!env.R2) {
