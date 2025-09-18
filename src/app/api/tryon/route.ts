@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { r2Put, sha256, generateId } from '@/lib/utils';
 import { Env, TryOnRequest, TryOnResponse } from '@/lib/types';
 import { getDefaultProvider } from '@/lib/tryon';
-import { checkRateLimitEdge } from '@/lib/ratelimit';
+import { checkRateLimitEdge } from '../../../lib/ratelimit';
 import { getRequestContext } from '@cloudflare/next-on-pages';
 
 export const runtime = 'edge';

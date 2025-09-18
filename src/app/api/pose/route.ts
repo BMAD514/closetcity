@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { fetchAsBase64, r2Put, sha256, generateId } from '@/lib/utils';
 import { POSE_PROMPT_TEMPLATE, GEMINI_API_URL, API_TIMEOUT } from '@/lib/constants';
 import { Env, PoseRequest, PoseResponse, GeminiRequest, GeminiResponse } from '@/lib/types';
-import { checkRateLimitEdge } from '@/lib/ratelimit';
+import { checkRateLimitEdge } from '../../../lib/ratelimit';
 import { getRequestContext } from '@cloudflare/next-on-pages';
 
 export const runtime = 'edge';
