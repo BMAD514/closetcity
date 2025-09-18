@@ -18,7 +18,7 @@ export const onRequest = async (context: any) => {
     }
 
     const { sha256, generateId, r2Put, fetchAsBase64 } = await import('../../src/lib/utils');
-    const { GEMINI_API_URL, API_TIMEOUT, POSE_PROMPT_V2, POSE_PROMPT_V1 } = await import('../../src/lib/constants');
+    const { GEMINI_API_URL, API_TIMEOUT, POSE_PROMPT_TEMPLATE } = await import('../../src/lib/constants');
 
     const promptVersion = env.PROMPT_VERSION || 'v1';
     const cacheInput = `${promptVersion}|${modelUrl}|${poseKey}`;
@@ -33,7 +33,7 @@ export const onRequest = async (context: any) => {
 
     const bodyReq = {
       contents: [
-        { text: POSE_PROMPT_V2 || POSE_PROMPT_V1 },
+        { text: POSE_PROMPT_TEMPLATE(poseKey) },
         { inlineData: { data: modelBase64, mimeType: 'image/*' } },
       ],
     };
