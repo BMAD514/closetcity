@@ -1,14 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import type { Env } from '../../../lib/types';
-import { getRequestContext } from '@cloudflare/next-on-pages';
-
-export const runtime = 'edge';
-
-export async function GET(request: NextRequest) {
+export const onRequest: PagesFunction = async (context) => {
   try {
-    const env = getRequestContext().env as unknown as Env;
+    const { env, request } = context as unknown as { env: any; request: Request };
     if (!env.DB) {
-      return NextResponse.json({ ok: false, error: 'DB binding missing' }, { status: 500 });
+      return new Response(JSON.stringify({ ok: false, error: 'DB binding missing' }), { status: 500 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -21,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     const rows = await stmt.all();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const items = (rows?.results || rows as any[])?.map((r: any) => ({
+    const items = (rows?.results || (rows as any[]))?.map((r: any) => ({
       id: r.id,
       brand: r.brand,
       title: r.title,
@@ -29,10 +23,15 @@ export async function GET(request: NextRequest) {
       image_url: r.image_url,
     }));
 
-    return NextResponse.json({ ok: true, items });
+    return new Response(JSON.stringify({ ok: true, items }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (err) {
     console.error('GET /api/garments failed', err);
-    return NextResponse.json({ ok: false, error: 'Internal error' }, { status: 500 });
+    return new Response(JSON.stringify({ ok: false, error: 'Internal error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
-}
+};
 
