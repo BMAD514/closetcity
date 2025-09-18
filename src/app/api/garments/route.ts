@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { Env } from '@/lib/types';
+import type { Env } from '../../../lib/types';
+import { getRequestContext } from '@cloudflare/next-on-pages';
 
 export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
   try {
-    const env = process.env as unknown as Env;
+    const env = getRequestContext().env as unknown as Env;
     if (!env.DB) {
       return NextResponse.json({ ok: false, error: 'DB binding missing' }, { status: 500 });
     }

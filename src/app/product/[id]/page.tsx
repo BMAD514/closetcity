@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import Container from '@/components/Container';
 import Link from 'next/link';
 
@@ -10,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ''}/api/garments/${id}`, { cache: 'no-store' });
+  const res = await fetch(`/api/garments/${id}`, { cache: 'no-store' });
   if (!res.ok) {
     return (
       <main className="mt-10">
