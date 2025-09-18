@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { r2Put, generateId } from '@/lib/utils';
-import { MAX_FILE_SIZE, ALLOWED_IMAGE_TYPES } from '@/lib/constants';
+import { r2Put, generateId } from '../../../lib/utils';
+import { MAX_FILE_SIZE, ALLOWED_IMAGE_TYPES } from '../../../lib/constants';
 import { getRequestContext } from '@cloudflare/next-on-pages';
-import { Env, UploadResponse } from '@/lib/types';
+import { Env, UploadResponse } from '../../../lib/types';
 
 export const runtime = 'edge';
 
