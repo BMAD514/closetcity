@@ -1,4 +1,7 @@
-export const runtime = 'edge';
+"use client";
+
+import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'next/navigation';
 import Container from '@/components/Container';
 import Link from 'next/link';
 
@@ -7,12 +10,70 @@ function formatPrice(cents?: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n / 100);
 }
 
-export const dynamic = 'force-dynamic';
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/$/, '');
 
-export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const res = await fetch(`/api/garments/${id}`, { cache: 'no-store' });
-  if (!res.ok) {
+type Item = { id: string; brand: string; title: string; size?: string; condition?: string | null; price_cents?: number; image_url: string };
+
+type Media = { flatlay: string[]; tryon: string[] };
+
+export default function ProductPage() {
+  const { id } = useParams<{ id: string }>();
+  const [item, setItem] = useState<Item | null>(null);
+  const [media, setMedia] = useState<Media>({ flatlay: [], tryon: [] });
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (!id) return;
+    const url = `${API_BASE}/api/garments/${id}`;
+    fetch(url)
+      .then((r) => {
+        if (!r.ok) throw new Error('not found');
+        return r.json();
+      })
+      .then((data) => {
+        setItem(data.item as Item);
+        setMedia(data.media as Media);
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  const { imagesFlat, imagesTryon, bestImageUrl } = useMemo(() => {
+    const flat = media.flatlay?.length ? media.flatlay : (item?.image_url ? [item.image_url] : []);
+    const tr = media.tryon || [];
+    const best = (tr[0] || flat[0] || item?.image_url || '') as string;
+    return { imagesFlat: flat, imagesTryon: tr, bestImageUrl: best };
+  }, [media, item]);
+
+  const jsonLd = useMemo(() => (
+    item && id ? {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: item.title,
+      brand: { '@type': 'Brand', name: item.brand },
+      image: [...imagesFlat, ...imagesTryon],
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'USD',
+        price: (item.price_cents ?? 0) / 100,
+        availability: 'https://schema.org/InStock',
+        url: `https://closet.city/product/${id}`,
+      },
+    } : null
+  ), [item, imagesFlat, imagesTryon, id]);
+
+  if (loading) {
+    return (
+      <main className="mt-10">
+        <Container>
+          <p className="text-sm text-neutral-500">Loading			</p>
+        </Container>
+      </main>
+    );
+  }
+
+  if (notFound || !item) {
     return (
       <main className="mt-10">
         <Container>
@@ -21,28 +82,6 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       </main>
     );
   }
-  const data = await res.json();
-  const item = data.item as { id: string; brand: string; title: string; size?: string; condition?: string | null; price_cents?: number; image_url: string };
-  const media = data.media as { flatlay: string[]; tryon: string[] };
-
-  const imagesFlat = media.flatlay?.length ? media.flatlay : [item.image_url];
-  const imagesTryon = media.tryon || [];
-  const bestImageUrl = (imagesTryon[0] || imagesFlat[0] || item.image_url) as string;
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: item.title,
-    brand: { '@type': 'Brand', name: item.brand },
-    image: [...imagesFlat, ...imagesTryon],
-    offers: {
-      '@type': 'Offer',
-      priceCurrency: 'USD',
-      price: (item.price_cents ?? 0) / 100,
-      availability: 'https://schema.org/InStock',
-      url: `https://closet.city/product/${id}`,
-    },
-  };
 
   return (
     <main className="mt-10">
@@ -84,15 +123,19 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
               {item.condition && <div>Condition: {item.condition}</div>}
             </div>
             <div className="text-lg">{formatPrice(item.price_cents)}</div>
-            <Link href={`/virtual-try-on?garmentUrl=${encodeURIComponent(bestImageUrl)}`} className="inline-flex items-center justify-center border border-black px-6 py-3 text-sm uppercase tracking-wide hover:bg-black hover:text-white transition-colors">
-              Try this on
-            </Link>
+            {bestImageUrl && (
+              <Link href={`/virtual-try-on?garmentUrl=${encodeURIComponent(bestImageUrl)}`} className="inline-flex items-center justify-center border border-black px-6 py-3 text-sm uppercase tracking-wide hover:bg-black hover:text-white transition-colors">
+                Try this on
+              </Link>
+            )}
             <button className="mt-3 inline-flex items-center justify-center border border-neutral-300 px-6 py-3 text-sm uppercase tracking-wide hover:bg-neutral-900 hover:text-white transition-colors">Buy</button>
             <p className="text-xs text-neutral-500">Stripe Checkout: TODO</p>
           </aside>
         </div>
       </Container>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {jsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      )}
     </main>
   );
 }
