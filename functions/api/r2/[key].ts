@@ -1,4 +1,4 @@
-export const onRequest: PagesFunction = async (context) => {
+export const onRequest = async (context: any) => {
   try {
     const { env, params } = context as unknown as { env: any; params: { key?: string } };
     if (!env.R2) return new Response('R2 storage not configured', { status: 500 });

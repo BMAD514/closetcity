@@ -1,4 +1,4 @@
-export const onRequest: PagesFunction = async (context) => {
+export const onRequest = async (context: any) => {
   try {
     const { env, params } = context as unknown as { env: any; params: { id?: string } };
     const id = params?.id as string | undefined;
