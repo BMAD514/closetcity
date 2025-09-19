@@ -5,7 +5,7 @@ import Container from '@/components/Container';
 import Grid from '@/components/Grid';
 import Card from '@/components/Card';
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/$/, '');
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE || 'https://f6d07313.closetcity-tryon.pages.dev').replace(/\/$/, '');
 
 export default function ShopPage() {
   const [items, setItems] = useState<Array<{ id: string; brand: string; title: string; price_cents?: number; image_url: string }>>([]);
