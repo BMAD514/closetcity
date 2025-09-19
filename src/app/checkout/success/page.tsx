@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function CheckoutSuccessPage() {
+function SuccessInner() {
   const params = useSearchParams();
   const orderId = params.get("orderId");
   return (
@@ -20,6 +21,14 @@ export default function CheckoutSuccessPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={<main className="mt-10"><div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 text-center">Loading…</div></main>}>
+      <SuccessInner />
+    </Suspense>
   );
 }
 
