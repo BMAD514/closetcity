@@ -10,7 +10,7 @@ function formatPrice(cents?: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n / 100);
 }
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/$/, '');
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE || 'https://f6d07313.closetcity-tryon.pages.dev').replace(/\/$/, '');
 
 type Item = { id: string; brand: string; title: string; size?: string; condition?: string | null; price_cents?: number; image_url: string };
 

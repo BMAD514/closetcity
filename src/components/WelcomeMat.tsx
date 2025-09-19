@@ -5,7 +5,7 @@ import Link from "next/link";
 import BeforeAfterSlider from "./BeforeAfterSlider";
 
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE || '').replace(/\/$/, '');
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE || 'https://f6d07313.closetcity-tryon.pages.dev').replace(/\/$/, '');
 
 export default function WelcomeMat() {
   const [originalUrl, setOriginalUrl] = React.useState<string | null>(null);
