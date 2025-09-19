@@ -2,14 +2,14 @@ export const onRequest = async (context: any) => {
   try {
     const { env, params } = context as unknown as { env: any; params: { id?: string } };
     const id = params?.id as string | undefined;
-    if (!id) return new Response(JSON.stringify({ ok: false, error: 'Missing id' }), { status: 400 });
-    if (!env.DB) return new Response(JSON.stringify({ ok: false, error: 'DB binding missing' }), { status: 500 });
+    if (!id) return new Response(JSON.stringify({ ok: false, error: 'Missing id' }), { status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With' } });
+    if (!env.DB) return new Response(JSON.stringify({ ok: false, error: 'DB binding missing' }), { status: 500, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With' } });
 
     const garment = await env.DB.prepare(
       'SELECT id, brand, title, size, condition, price_cents, image_url, created_at FROM garments WHERE id = ?'
     ).bind(id).first();
 
-    if (!garment) return new Response(JSON.stringify({ ok: false, error: 'Not found' }), { status: 404 });
+    if (!garment) return new Response(JSON.stringify({ ok: false, error: 'Not found' }), { status: 404, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With' } });
 
     const mediaRows = await env.DB.prepare(
       'SELECT id, url, type FROM listing_media WHERE listing_id = ? ORDER BY created_at ASC'
@@ -39,13 +39,13 @@ export const onRequest = async (context: any) => {
         },
         media: { flatlay, tryon },
       }),
-      { headers: { 'Content-Type': 'application/json' } }
+      { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With' } }
     );
   } catch (err) {
     console.error('GET /api/garments/[id] failed', err);
     return new Response(JSON.stringify({ ok: false, error: 'Internal error' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With' },
     });
   }
 };

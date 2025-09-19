@@ -1,6 +1,17 @@
 export const onRequest = async (context: any) => {
   try {
     const { env, request, waitUntil } = context as unknown as { env: any; request: Request; waitUntil: (p: Promise<any>) => void };
+
+    // CORS preflight support
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+        },
+      });
+    }
     if (!env.DB || !env.R2 || !env.GEMINI_API_KEY) {
       return new Response(
         JSON.stringify({ success: false, error: 'Required services not configured', code: 'CONFIG_MISSING' }),
@@ -111,7 +122,16 @@ export const onRequest = async (context: any) => {
 };
 
 function json(obj: any, status = 200) {
-  return new Response(JSON.stringify(obj), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+    },
+  });
 }
 
 async function ensureJobForCache(env: any, type: string, cacheKey: string, input: any, url: string) {
