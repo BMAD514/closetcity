@@ -1,18 +1,19 @@
 export const onRequest = async (context: any) => {
+  const { env, request } = context as unknown as { env: any; request: Request };
+
+  // CORS headers for cross-origin requests from the UI
+  const cors = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+  } as const;
+
+  // Handle CORS preflight
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { headers: cors as any });
+  }
+
   try {
-    const { env, request } = context as unknown as { env: any; request: Request };
-
-    // CORS headers for cross-origin requests from the UI
-    const cors = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
-    } as const;
-
-    // Handle CORS preflight
-    if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: cors as any });
-    }
     if (!env.R2) {
       return new Response(JSON.stringify({ success: false, error: 'R2 storage not configured', code: 'CONFIG_MISSING', url: '' }), { status: 500, headers: { 'Content-Type': 'application/json', ...cors } as any });
     }
