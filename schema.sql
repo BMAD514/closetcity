@@ -56,3 +56,17 @@ CREATE INDEX IF NOT EXISTS idx_pose_cache_prompt_version ON pose_cache(prompt_ve
 CREATE INDEX IF NOT EXISTS idx_pose_cache_created_at ON pose_cache(created_at);
 CREATE INDEX IF NOT EXISTS idx_model_cache_prompt_version ON model_cache(prompt_version);
 CREATE INDEX IF NOT EXISTS idx_model_cache_created_at ON model_cache(created_at);
+
+-- Orders table for Stripe checkout (minimal MVP)
+CREATE TABLE IF NOT EXISTS orders(
+  id TEXT PRIMARY KEY,
+  status TEXT NOT NULL, -- 'pending' | 'paid' | 'failed' | 'canceled'
+  user_email TEXT,
+  items_json TEXT NOT NULL, -- JSON string of line items
+  total_cents INTEGER DEFAULT 0,
+  stripe_session_id TEXT,
+  created_at INTEGER DEFAULT (strftime('%s','now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);
