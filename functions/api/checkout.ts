@@ -27,12 +27,12 @@ export const onRequest = async (context: any) => {
       .bind(orderId, 'pending', customer_email || null, JSON.stringify(items), amount)
       .run();
 
-    // Build success/cancel URLs
+    // Build success/cancel URLs (prefer Origin header from UI → fallback to SITE_URL → API host)
     const url = new URL(request.url);
-    const origin = `${url.protocol}//${url.host}`;
-    const siteFallback = env.SITE_URL || origin;
-    const success_url = `${siteFallback}/checkout/success?orderId=${orderId}`;
-    const cancel_url = `${siteFallback}/checkout/cancel?orderId=${orderId}`;
+    const originHeader = request.headers.get('Origin');
+    const site = originHeader || env.SITE_URL || `${url.protocol}//${url.host}`;
+    const success_url = `${site}/checkout/success?orderId=${orderId}`;
+    const cancel_url = `${site}/checkout/cancel?orderId=${orderId}`;
 
     // Create Stripe Checkout Session via REST API
     const form = new URLSearchParams();
