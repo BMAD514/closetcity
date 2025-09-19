@@ -44,8 +44,10 @@ export const onRequest = async (context: any) => {
 
     const { r2Put } = await import('../../src/lib/utils');
     const url = await r2Put(env.R2, filename, arrayBuffer, file.type);
+    const origin = new URL(request.url).origin;
+    const publicUrl = url.startsWith('http') ? url : origin + url;
 
-    return new Response(JSON.stringify({ success: true, url }), { headers: { 'Content-Type': 'application/json', ...cors } as any });
+    return new Response(JSON.stringify({ success: true, url: publicUrl }), { headers: { 'Content-Type': 'application/json', ...cors } as any });
   } catch (error) {
     console.error('Upload error:', error);
     return new Response(

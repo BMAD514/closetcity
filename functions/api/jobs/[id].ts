@@ -22,6 +22,16 @@ export const onRequest = async (context: any) => {
   if (!raw) {
     return new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With' } });
   }
-  return new Response(raw, { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With' } });
+  try {
+    const job = JSON.parse(raw);
+    const origin = new URL(request.url).origin;
+    if (job?.output?.url && typeof job.output.url === 'string' && job.output.url.startsWith('/')) {
+      job.output.url = origin + job.output.url;
+    }
+    return new Response(JSON.stringify(job), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With' } });
+  } catch {
+    // If parsing fails, just return the raw string
+    return new Response(raw, { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With' } });
+  }
 }
 

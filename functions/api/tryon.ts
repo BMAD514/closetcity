@@ -34,9 +34,9 @@ export const onRequest = async (context: any) => {
     if (cached) {
       if (preferAsync) {
         const jobId = await ensureJobForCache(env, 'tryon', cacheKey, { modelUrl, garmentUrl, poseKey }, cached.image_url as string);
-        return json({ jobId, status: 'succeeded', output: { url: cached.image_url }, cacheHit: true });
+        { const site = new URL(request.url).origin; return json({ jobId, status: 'succeeded', output: { url: ((cached.image_url as string).startsWith('http') ? cached.image_url : site + (cached.image_url as string)) }, cacheHit: true }); }
       }
-      return json({ success: true, url: cached.image_url as string, cached: true, cacheHit: true });
+      { const site = new URL(request.url).origin; const full = ((cached.image_url as string).startsWith('http') ? cached.image_url : site + (cached.image_url as string)); return json({ success: true, url: full, cached: true, cacheHit: true }); }
     }
 
     if (preferAsync) {
@@ -95,12 +95,14 @@ export const onRequest = async (context: any) => {
     const resultId = generateId();
     const resultKey = `tryon/${resultId}.webp`;
     const resultUrl = await r2Put(env.R2, resultKey, bytes, 'image/webp');
+    const site = new URL(request.url).origin;
+    const full = resultUrl.startsWith('http') ? resultUrl : site + resultUrl;
 
     await env.DB.prepare('INSERT INTO tryon_cache (cache_key, image_url, prompt_version) VALUES (?, ?, ?)')
       .bind(cacheKey, resultUrl, promptVersion)
       .run();
 
-    return json({ success: true, url: resultUrl, cached: false, cacheHit: false });
+    return json({ success: true, url: full, cached: false, cacheHit: false });
   } catch (error) {
     console.error('Try-on error:', error);
     return json({ success: false, error: error instanceof Error ? error.message : 'Try-on failed', code: 'INTERNAL_ERROR' }, 500);
