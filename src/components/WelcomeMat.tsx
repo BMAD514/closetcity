@@ -4,6 +4,9 @@ import React from "react";
 import Link from "next/link";
 import BeforeAfterSlider from "./BeforeAfterSlider";
 
+
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE || '').replace(/\/$/, '');
+
 export default function WelcomeMat() {
   const [originalUrl, setOriginalUrl] = React.useState<string | null>(null);
   const [modelUrl, setModelUrl] = React.useState<string | null>(null);
@@ -16,7 +19,7 @@ export default function WelcomeMat() {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("kind", "model");
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const res = await fetch(`${API_BASE}/api/upload`, { method: "POST", body: fd });
       const json = await res.json();
       if (!res.ok || !json?.success) throw new Error(json?.error || "Upload failed");
       return json.url as string;
@@ -26,14 +29,30 @@ export default function WelcomeMat() {
   }
 
   async function handleGenerateModel(userImageUrl: string) {
-    const res = await fetch("/api/model", {
+    const res = await fetch(`${API_BASE}/api/model`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userImageUrl }),
+      body: JSON.stringify({ userImageUrl, async: true }),
     });
     const json = await res.json();
-    if (!res.ok || !json?.success) throw new Error(json?.error || "Model generation failed");
-    return json.url as string;
+    if (!res.ok) throw new Error(json?.error || "Model generation failed");
+    if (json?.url) return json.url as string;
+    if (json?.jobId) {
+      let delay = 600;
+      const start = Date.now();
+      while (true) {
+        const s = await fetch(`${API_BASE}/api/jobs/${json.jobId}`, { cache: "no-store" });
+        if (s.ok) {
+          const sj = await s.json();
+          if (sj?.status === "succeeded" && sj?.output?.url) return sj.output.url as string;
+          if (sj?.status === "failed") throw new Error(sj?.error || "Model job failed");
+        }
+        if (Date.now() - start > 120000) throw new Error("Timed out");
+        await new Promise((r) => setTimeout(r, delay));
+        delay = Math.min(3000, Math.round(delay * 1.5));
+      }
+    }
+    throw new Error("Unexpected response");
   }
 
   async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {

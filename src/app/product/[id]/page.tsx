@@ -23,6 +23,30 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
+  const [buying, setBuying] = useState(false);
+  const [buyError, setBuyError] = useState<string | null>(null);
+
+  async function handleBuy() {
+    if (!id) return;
+    setBuying(true);
+    setBuyError(null);
+    try {
+      const r = await fetch(`${API_BASE}/api/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ garmentId: String(id), quantity: 1 }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j?.ok || !j?.url) throw new Error(j?.error || 'Checkout init failed');
+      window.location.href = j.url as string;
+    } catch (e) {
+      setBuyError(e instanceof Error ? e.message : 'Checkout failed');
+    } finally {
+      setBuying(false);
+    }
+  }
+
+
   useEffect(() => {
     if (!id) return;
     const url = `${API_BASE}/api/garments/${id}`;
@@ -128,8 +152,10 @@ export default function ProductPage() {
                 Try this on
               </Link>
             )}
-            <button className="mt-3 inline-flex items-center justify-center border border-neutral-300 px-6 py-3 text-sm uppercase tracking-wide hover:bg-neutral-900 hover:text-white transition-colors">Buy</button>
-            <p className="text-xs text-neutral-500">Stripe Checkout: TODO</p>
+            <button onClick={handleBuy} disabled={buying} className="mt-3 inline-flex items-center justify-center border border-black px-6 py-3 text-sm uppercase tracking-wide hover:bg-black hover:text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+              {buying ? 'Redirecting…' : 'Buy'}
+            </button>
+            {buyError && <p className="text-xs text-red-600">{buyError}</p>}
           </aside>
         </div>
       </Container>
