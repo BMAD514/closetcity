@@ -10,6 +10,17 @@ export const TRYON_PROMPT_V1 = `Task: Apply the provided garment image to the su
 - Match lighting, folds, and scale realistically.
 Output image only. PromptVersion: ${PROMPT_VERSION}`;
 
+// AI Studio-aligned prompts (V2)
+export const MODEL_PROMPT_V2 = `Transform the person into a full-body fashion model photo.
+Background: clean neutral studio (#f0f0f0).
+Subject: neutral, professional model expression; preserve identity, unique features, and body type; standard relaxed standing pose.
+Return ONLY the final image. PromptVersion: ${PROMPT_VERSION}`;
+
+export const TRYON_PROMPT_V2 = `You MUST completely REMOVE and REPLACE the current clothing with the provided garment.
+Preserve the person's face, hair, body shape, and pose unchanged. Preserve the entire background perfectly.
+Realistically fit the new garment to the person (natural folds, shadows, and lighting; correct scale/alignment).
+Return ONLY the final image. PromptVersion: ${PROMPT_VERSION}`;
+
 export const POSE_PROMPT_TEMPLATE = (poseKey: string) => 
   `Regenerate from pose: ${poseKey}. Preserve person, current outfit, background & lighting. Keep materials/defects identical. Output image only. PromptVersion: ${PROMPT_VERSION}`;
 

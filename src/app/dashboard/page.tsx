@@ -124,7 +124,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-4">
         <div className="mb-8">
-          <Link href="/" className="text-purple-600 hover:text-purple-700 mb-4 inline-block">
+          <Link href="/" className="underline underline-offset-4 hover:opacity-80 mb-4 inline-block">
             ← Back to Home
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
@@ -149,7 +149,7 @@ export default function Dashboard() {
                   const file = e.target.files?.[0];
                   if (file) handleFileUpload(file, 'model');
                 }}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                className="block w-full text-sm text-neutral-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border file:border-black file:text-sm file:uppercase file:tracking-wide file:bg-neutral-100 file:text-black hover:file:bg-neutral-200"
                 disabled={loading}
               />
               {modelUrl && (
@@ -169,7 +169,7 @@ export default function Dashboard() {
                   const file = e.target.files?.[0];
                   if (file) handleFileUpload(file, 'garment');
                 }}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                className="block w-full text-sm text-neutral-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border file:border-black file:text-sm file:uppercase file:tracking-wide file:bg-neutral-100 file:text-black hover:file:bg-neutral-200"
                 disabled={loading}
               />
               {garmentUrl && (
@@ -189,7 +189,7 @@ export default function Dashboard() {
                     onClick={() => setSelectedPose(pose)}
                     className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
                       selectedPose === pose
-                        ? 'bg-purple-600 text-white'
+                        ? 'bg-black text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                     disabled={loading}
@@ -203,7 +203,7 @@ export default function Dashboard() {
             <button
               onClick={handleTryOn}
               disabled={loading || !modelUrl || !garmentUrl}
-              className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+              className="w-full bg-black hover:bg-black/80 disabled:bg-gray-300 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
             >
               {loading ? 'Generating...' : 'Generate Try-On'}
             </button>

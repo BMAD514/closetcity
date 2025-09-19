@@ -1,6 +1,7 @@
 # Cloudflare Pages configuration for closet.city
 name = "closetcity"
 compatibility_date = "2024-09-17"
+compatibility_flags = ["nodejs_compat"]
 
 # D1 Database binding
 [[d1_databases]]
