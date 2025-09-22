@@ -5,6 +5,7 @@ A minimal full-stack virtual try-on platform for resale fashion, built with Next
 ## 🚀 Features
 
 - **Virtual Try-On**: AI-powered garment visualization using Google Gemini
+- **Archive Storefront**: Chico.raoul-inspired merchandising with dynamic ratings, categories, and copy on the shop and product pages
 - **Pose Generation**: Generate different poses and angles from try-on results
 - **Smart Caching**: Deterministic caching to avoid regenerating identical requests
 - **File Upload**: Secure image upload to Cloudflare R2 storage
@@ -108,21 +109,14 @@ In Cloudflare Pages → Functions → Bindings, add:
 - R2 bucket: `closetcity-storage`
 
 
-### D1 Seed Example
-You can seed a few garments and media to test the shop/product pages:
+### Seed the boutique
+Load the curated closet data after applying the schema:
 
-````sql
-INSERT INTO garments (id, owner_id, title, brand, size, condition, price_cents, image_url)
-VALUES
-  ('g1','u1','Denim Jacket','A.P.C.','M','Good',32000,'https://example.com/flat/apc-denim-1.jpg'),
-  ('g2','u1','Cotton Shirt','COS','M','Like New',19000,'https://example.com/flat/cos-shirt-1.jpg');
+```bash
+npx wrangler d1 execute closetcity-db --file=./seeds/garments.sql
+```
 
-INSERT INTO listing_media (id, listing_id, type, url)
-VALUES
-  ('m1','g1','flatlay','https://example.com/flat/apc-denim-1.jpg'),
-  ('m2','g1','tryon','https://example.com/tryon/apc-denim-front.jpg'),
-  ('m3','g1','tryon','https://example.com/tryon/apc-denim-side.jpg');
-````
+The seed script wipes any matching IDs and repopulates six hero pieces with flat-lay and try-on imagery so the shop, product views, and virtual styling rack feel lived-in immediately.
 
 ### 5. Deploy to Cloudflare Pages
 
@@ -362,3 +356,4 @@ For issues and questions:
 - Create an issue in the repository
 - Check the Cloudflare documentation for service-specific help
 - Review the Google Gemini API documentation for AI-related issues
+

@@ -1,0 +1,62 @@
+[
+  {
+    "garment_id": "g-bbc",
+    "garment_url": "https://closet.city/inventory/bbc.webp",
+    "output_placeholder": "https://closet.city/inventory/tryon/bbc-look.webp"
+  },
+  {
+    "garment_id": "g-burberry-rainbow",
+    "garment_url": "https://closet.city/inventory/burberry-rainbow.webp",
+    "output_placeholder": "https://closet.city/inventory/tryon/burberry-rainbow-look.webp"
+  },
+  {
+    "garment_id": "g-burberry-tshirt",
+    "garment_url": "https://closet.city/inventory/burberry-tshirt.webp",
+    "output_placeholder": "https://closet.city/inventory/tryon/burberry-tshirt-look.webp"
+  },
+  {
+    "garment_id": "g-evolution-polo",
+    "garment_url": "https://closet.city/inventory/evolution-short-sleeve-polo-shirt.webp",
+    "output_placeholder": "https://closet.city/inventory/tryon/evolution-short-sleeve-polo-shirt-look.webp"
+  },
+  {
+    "garment_id": "g-gucci-mask",
+    "garment_url": "https://closet.city/inventory/gucci-mask.webp",
+    "output_placeholder": "https://closet.city/inventory/tryon/gucci-mask-look.webp"
+  },
+  {
+    "garment_id": "g-jw-hoodie",
+    "garment_url": "https://closet.city/inventory/jw-hoodie.webp",
+    "output_placeholder": "https://closet.city/inventory/tryon/jw-hoodie-look.webp"
+  },
+  {
+    "garment_id": "g-jwa-tee",
+    "garment_url": "https://closet.city/inventory/jwa-tshirt.webp",
+    "output_placeholder": "https://closet.city/inventory/tryon/jwa-tshirt-look.webp"
+  },
+  {
+    "garment_id": "g-balenciaga-trefoil",
+    "garment_url": "https://closet.city/inventory/p0.webp",
+    "output_placeholder": "https://closet.city/inventory/tryon/p0-look.webp"
+  },
+  {
+    "garment_id": "g-paul-smith-camp",
+    "garment_url": "https://closet.city/inventory/paul-smith-camp.webp",
+    "output_placeholder": "https://closet.city/inventory/tryon/paul-smith-camp-look.webp"
+  },
+  {
+    "garment_id": "g-paul-smith-polo",
+    "garment_url": "https://closet.city/inventory/paul-smith-polo.webp",
+    "output_placeholder": "https://closet.city/inventory/tryon/paul-smith-polo-look.webp"
+  },
+  {
+    "garment_id": "g-siberia-hills",
+    "garment_url": "https://closet.city/inventory/siberia-hills.webp",
+    "output_placeholder": "https://closet.city/inventory/tryon/siberia-hills-look.webp"
+  },
+  {
+    "garment_id": "g-stussy-vest",
+    "garment_url": "https://closet.city/inventory/stussy-vest.webp",
+    "output_placeholder": "https://closet.city/inventory/tryon/stussy-vest-look.webp"
+  }
+]

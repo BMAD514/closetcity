@@ -1,0 +1,122 @@
+[
+  {
+    "id": "g-bbc",
+    "slug": "bbc",
+    "title": "Astro Logo Hoodie",
+    "brand": "Billionaire Boys Club",
+    "size": "L",
+    "condition": "Excellent",
+    "price_cents": 21500,
+    "image": "/inventory/bbc.webp"
+  },
+  {
+    "id": "g-burberry-rainbow",
+    "slug": "burberry-rainbow",
+    "title": "Rainbow Vintage Check Shirt",
+    "brand": "Burberry",
+    "size": "M",
+    "condition": "Very Good",
+    "price_cents": 52000,
+    "image": "/inventory/burberry-rainbow.webp"
+  },
+  {
+    "id": "g-burberry-tshirt",
+    "slug": "burberry-tshirt",
+    "title": "Mythic Siren Graphic Tee",
+    "brand": "Burberry",
+    "size": "L",
+    "condition": "Excellent",
+    "price_cents": 39000,
+    "image": "/inventory/burberry-tshirt.webp"
+  },
+  {
+    "id": "g-evolution-polo",
+    "slug": "evolution-short-sleeve-polo-shirt",
+    "title": "Evolution Short-Sleeve Polo",
+    "brand": "Lululemon",
+    "size": "M",
+    "condition": "Excellent",
+    "price_cents": 8900,
+    "image": "/inventory/evolution-short-sleeve-polo-shirt.webp"
+  },
+  {
+    "id": "g-gucci-mask",
+    "slug": "gucci-mask",
+    "title": "Mask Logo Fleece Hoodie",
+    "brand": "Gucci",
+    "size": "L",
+    "condition": "Excellent",
+    "price_cents": 98000,
+    "image": "/inventory/gucci-mask.webp"
+  },
+  {
+    "id": "g-jw-hoodie",
+    "slug": "jw-hoodie",
+    "title": "Classic Logo Hoodie",
+    "brand": "JW Anderson",
+    "size": "M",
+    "condition": "Excellent",
+    "price_cents": 55000,
+    "image": "/inventory/jw-hoodie.webp"
+  },
+  {
+    "id": "g-jwa-tee",
+    "slug": "jwa-tshirt",
+    "title": "Anchor Crest Tee",
+    "brand": "JW Anderson",
+    "size": "L",
+    "condition": "Excellent",
+    "price_cents": 31000,
+    "image": "/inventory/jwa-tshirt.webp"
+  },
+  {
+    "id": "g-balenciaga-trefoil",
+    "slug": "p0",
+    "title": "Adidas Trefoil Oversized Tee",
+    "brand": "Balenciaga x Adidas",
+    "size": "XL",
+    "condition": "Good",
+    "price_cents": 46000,
+    "image": "/inventory/p0.webp"
+  },
+  {
+    "id": "g-paul-smith-camp",
+    "slug": "paul-smith-camp",
+    "title": "Lotus Cloud Camp Shirt",
+    "brand": "Paul Smith",
+    "size": "L",
+    "condition": "Excellent",
+    "price_cents": 38000,
+    "image": "/inventory/paul-smith-camp.webp"
+  },
+  {
+    "id": "g-paul-smith-polo",
+    "slug": "paul-smith-polo",
+    "title": "Signature Button Polo",
+    "brand": "Paul Smith",
+    "size": "M",
+    "condition": "Excellent",
+    "price_cents": 25500,
+    "image": "/inventory/paul-smith-polo.webp"
+  },
+  {
+    "id": "g-siberia-hills",
+    "slug": "siberia-hills",
+    "title": "Prince Graphic Tee",
+    "brand": "Siberia Hills",
+    "size": "L",
+    "condition": "Loved",
+    "price_cents": 22000,
+    "image": "/inventory/siberia-hills.webp"
+  },
+  {
+    "id": "g-stussy-vest",
+    "slug": "stussy-vest",
+    "title": "Chevron Knit Vest",
+    "brand": "Stussy",
+    "size": "L",
+    "condition": "Very Good",
+    "price_cents": 18000,
+    "image": "/inventory/stussy-vest.webp"
+  }
+]

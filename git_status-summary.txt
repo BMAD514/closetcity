@@ -1,0 +1,5 @@
+Summary of repo changes for launch checklist:
+- boutique copy + homepage/virtual try-on UX edits
+- AI response handling + try-on UI meta annotations
+- checkout success/cancel polishing and orders endpoint
+- D1 seeds and wrangler config updates

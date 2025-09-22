@@ -4,8 +4,12 @@ import React from "react";
 import Link from "next/link";
 import BeforeAfterSlider from "./BeforeAfterSlider";
 
+const RAW_API_BASE = (typeof window !== "undefined" && window.location?.origin) || process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE || "";
+const API_BASE = RAW_API_BASE.replace(/\/$/, "");
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE || 'https://f6d07313.closetcity-tryon.pages.dev').replace(/\/$/, '');
+function apiUrl(path: string) {
+  return API_BASE ? `${API_BASE}${path}` : path;
+}
 
 export default function WelcomeMat() {
   const [originalUrl, setOriginalUrl] = React.useState<string | null>(null);
@@ -19,7 +23,7 @@ export default function WelcomeMat() {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("kind", "model");
-      const res = await fetch(`${API_BASE}/api/upload`, { method: "POST", body: fd });
+      const res = await fetch(apiUrl("/api/upload"), { method: "POST", body: fd });
       const json = await res.json();
       if (!res.ok || !json?.success) throw new Error(json?.error || "Upload failed");
       return json.url as string;
@@ -29,7 +33,7 @@ export default function WelcomeMat() {
   }
 
   async function handleGenerateModel(userImageUrl: string) {
-    const res = await fetch(`${API_BASE}/api/model`, {
+    const res = await fetch(apiUrl("/api/model"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userImageUrl, async: true }),
@@ -41,7 +45,7 @@ export default function WelcomeMat() {
       let delay = 600;
       const start = Date.now();
       while (true) {
-        const s = await fetch(`${API_BASE}/api/jobs/${json.jobId}`, { cache: "no-store" });
+        const s = await fetch(apiUrl(`/api/jobs/${json.jobId}`), { cache: "no-store" });
         if (s.ok) {
           const sj = await s.json();
           if (sj?.status === "succeeded" && sj?.output?.url) return sj.output.url as string;
@@ -84,19 +88,19 @@ export default function WelcomeMat() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
           <div>
-            <h2 className="h1 mb-3">Create Your Model for Any Look</h2>
+            <h2 className="h1 mb-3">Tailor a studio double of yourself.</h2>
             <p className="text-sm text-neutral-600 mb-6">
-              Upload a full-body photo. We’ll generate a clean studio model of you.
+              Drop in a full-body photo and we&apos;ll refit it into a clean editorial-ready model shot, no change to your face, just a sharper mise-en-scene.
             </p>
 
             {!modelUrl && (
               <label className="inline-flex items-center border border-black px-6 py-3 text-sm uppercase tracking-wide hover:bg-black hover:text-white transition-colors cursor-pointer">
                 <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={onFileChange} />
-                Upload Photo
+                Upload your portrait
               </label>
             )}
             {loading && (
-              <div className="mt-4 text-sm text-neutral-500">Generating your model…</div>
+              <div className="mt-4 text-sm text-neutral-500">Tailoring your studio double. Hold tight.</div>
             )}
             {error && (
               <div className="mt-4 text-sm text-red-600">{error}</div>
@@ -105,19 +109,19 @@ export default function WelcomeMat() {
             {modelUrl && (
               <div className="mt-6 flex items-center gap-4">
                 <button onClick={onReset} className="underline underline-offset-4 hover:opacity-80 text-sm">
-                  Use Different Photo
+                  Try a different photo
                 </button>
-                <Link href="/dashboard" className="inline-flex items-center border border-black px-6 py-3 text-sm uppercase tracking-wide hover:bg-black hover:text-white transition-colors">
-                  Proceed to Styling
+                <Link href="/virtual-try-on" className="inline-flex items-center border border-black px-6 py-3 text-sm uppercase tracking-wide hover:bg-black hover:text-white transition-colors">
+                  Enter the styling studio
                 </Link>
               </div>
             )}
 
             <p className="mt-6 text-xs text-neutral-500">
-              Tip: Full-body, single subject, neutral pose works best. Background is replaced with a light studio backdrop.
+              Best results: solo, full-length, relaxed pose, natural light. We keep the background but polish the set to a soft studio glow.
             </p>
             <p className="mt-2 text-xs text-neutral-500">
-              By uploading, you agree to responsible use of AI and our content guidelines.
+              Uploading implies you have rights to the image and agree to our responsible-use standards.
             </p>
           </div>
 
@@ -126,7 +130,7 @@ export default function WelcomeMat() {
               <BeforeAfterSlider beforeUrl={originalUrl} afterUrl={modelUrl} alt="Model reveal" />
             ) : (
               <div className="border border-neutral-200 aspect-[4/5] w-full max-w-xl mx-auto grid place-items-center text-neutral-400 text-sm">
-                Before / After preview will appear here
+                We&apos;ll debut the transformation here.
               </div>
             )}
           </div>
@@ -135,4 +139,3 @@ export default function WelcomeMat() {
     </section>
   );
 }
-

@@ -1,0 +1,98 @@
+[
+  {
+    "source": "BBC.jpg",
+    "slug": "bbc",
+    "path": "/inventory/bbc.webp",
+    "width": 1166,
+    "height": 1400,
+    "filesize_kb": 81.7
+  },
+  {
+    "source": "burberry rainbow.jpg",
+    "slug": "burberry-rainbow",
+    "path": "/inventory/burberry-rainbow.webp",
+    "width": 571,
+    "height": 658,
+    "filesize_kb": 87.0
+  },
+  {
+    "source": "burberry tshirt.jpg",
+    "slug": "burberry-tshirt",
+    "path": "/inventory/burberry-tshirt.webp",
+    "width": 1050,
+    "height": 1400,
+    "filesize_kb": 68.2
+  },
+  {
+    "source": "Evolution Short-Sleeve Polo Shirt.jpg",
+    "slug": "evolution-short-sleeve-polo-shirt",
+    "path": "/inventory/evolution-short-sleeve-polo-shirt.webp",
+    "width": 966,
+    "height": 1125,
+    "filesize_kb": 78.1
+  },
+  {
+    "source": "gucci mask.jpg",
+    "slug": "gucci-mask",
+    "path": "/inventory/gucci-mask.webp",
+    "width": 750,
+    "height": 734,
+    "filesize_kb": 24.0
+  },
+  {
+    "source": "JW Hoodie.jpg",
+    "slug": "jw-hoodie",
+    "path": "/inventory/jw-hoodie.webp",
+    "width": 789,
+    "height": 1329,
+    "filesize_kb": 63.4
+  },
+  {
+    "source": "JWA tshirt.jpg",
+    "slug": "jwa-tshirt",
+    "path": "/inventory/jwa-tshirt.webp",
+    "width": 1066,
+    "height": 1204,
+    "filesize_kb": 11.0
+  },
+  {
+    "source": "P0.jpg",
+    "slug": "p0",
+    "path": "/inventory/p0.webp",
+    "width": 1280,
+    "height": 1280,
+    "filesize_kb": 184.1
+  },
+  {
+    "source": "paul smith camp.jpg",
+    "slug": "paul-smith-camp",
+    "path": "/inventory/paul-smith-camp.webp",
+    "width": 796,
+    "height": 946,
+    "filesize_kb": 76.7
+  },
+  {
+    "source": "Paul Smith polo.jpg",
+    "slug": "paul-smith-polo",
+    "path": "/inventory/paul-smith-polo.webp",
+    "width": 982,
+    "height": 1072,
+    "filesize_kb": 18.2
+  },
+  {
+    "source": "siberia hills.jpg",
+    "slug": "siberia-hills",
+    "path": "/inventory/siberia-hills.webp",
+    "width": 832,
+    "height": 733,
+    "filesize_kb": 64.2
+  },
+  {
+    "source": "stussy vest.jpg",
+    "slug": "stussy-vest",
+    "path": "/inventory/stussy-vest.webp",
+    "width": 1400,
+    "height": 872,
+    "filesize_kb": 43.9
+  }
+]
