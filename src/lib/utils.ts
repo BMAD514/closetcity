@@ -1,29 +1,50 @@
 // Core utility functions for closet.city
 
 /**
- * Fetch a URL and return the content as base64 string
+ * Fetch a URL and return image data/mime type information.
  */
-export async function fetchAsBase64(url: string): Promise<string> {
+export async function fetchImageInlineData(url: string): Promise<{ data: string; mimeType: string }> {
   try {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Failed to fetch ${url}: ${response.status}`);
     }
-    
+
     const arrayBuffer = await response.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
-    
-    // Convert to base64
+
     let binary = '';
-    for (let i = 0; i < uint8Array.byteLength; i++) {
+    for (let i = 0; i < uint8Array.byteLength; i += 1) {
       binary += String.fromCharCode(uint8Array[i]);
     }
-    
-    return btoa(binary);
+
+    const data = btoa(binary);
+    const headerType = response.headers.get('content-type');
+    const mimeType = headerType?.split(';')[0]?.trim() || inferMimeTypeFromUrl(url) || 'image/jpeg';
+
+    return { data, mimeType };
   } catch (error) {
     console.error('Error fetching as base64:', error);
     throw error;
   }
+}
+
+export async function fetchAsBase64(url: string): Promise<string> {
+  const result = await fetchImageInlineData(url);
+  return result.data;
+}
+
+function inferMimeTypeFromUrl(url: string): string | undefined {
+  try {
+    const base = url.split('?')[0].toLowerCase();
+    if (base.endsWith('.png')) return 'image/png';
+    if (base.endsWith('.jpg') || base.endsWith('.jpeg')) return 'image/jpeg';
+    if (base.endsWith('.webp')) return 'image/webp';
+    if (base.endsWith('.gif')) return 'image/gif';
+  } catch {
+    // ignore
+  }
+  return undefined;
 }
 
 /**

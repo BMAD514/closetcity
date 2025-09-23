@@ -27,7 +27,7 @@ export const onRequest = async (context: any) => {
       return json({ success: false, error: 'Missing required fields: modelUrl, poseKey', code: 'BAD_REQUEST' }, 400);
     }
 
-    const { sha256, generateId, r2Put, fetchAsBase64 } = await import('../../src/lib/utils');
+    const { sha256, generateId, r2Put, fetchImageInlineData } = await import('../../src/lib/utils');
     const { GEMINI_API_URL, API_TIMEOUT, POSE_PROMPT_TEMPLATE } = await import('../../src/lib/constants');
 
     const promptVersion = env.PROMPT_VERSION || 'v1';
@@ -73,12 +73,17 @@ export const onRequest = async (context: any) => {
     }
 
     const started = Date.now();
-    const modelBase64 = await fetchAsBase64(modelUrl);
+    const modelInline = await fetchImageInlineData(modelUrl);
 
     const bodyReq = {
       contents: [
-        { text: POSE_PROMPT_TEMPLATE(poseKey) },
-        { inlineData: { data: modelBase64, mimeType: 'image/*' } },
+        {
+          role: 'user',
+          parts: [
+            { text: POSE_PROMPT_TEMPLATE(poseKey) },
+            { inlineData: { data: modelInline.data, mimeType: modelInline.mimeType } },
+          ],
+        },
       ],
     };
 
@@ -162,11 +167,21 @@ async function processPoseJob(env: any, jobId: string) {
     job.status = 'processing'; job.attempts++; job.updatedAt = Date.now();
     await env.JOBS.put(`job:${jobId}`, JSON.stringify(job));
 
-    const { fetchAsBase64, generateId, r2Put } = await import('../../src/lib/utils');
+    const { fetchImageInlineData, generateId, r2Put } = await import('../../src/lib/utils');
     const { POSE_PROMPT_TEMPLATE, GEMINI_API_URL, API_TIMEOUT } = await import('../../src/lib/constants');
 
-    const modelBase64 = await fetchAsBase64(job.input.modelUrl);
-    const bodyReq = { contents: [ { text: POSE_PROMPT_TEMPLATE(job.input.poseKey) }, { inlineData: { data: modelBase64, mimeType: 'image/*' } } ] };
+    const modelInline = await fetchImageInlineData(job.input.modelUrl);
+    const bodyReq = {
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: POSE_PROMPT_TEMPLATE(job.input.poseKey) },
+            { inlineData: { data: modelInline.data, mimeType: modelInline.mimeType } },
+          ],
+        },
+      ],
+    };
 
     const controller = new AbortController();
     const started = Date.now();

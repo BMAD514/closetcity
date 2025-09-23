@@ -17,8 +17,11 @@ export interface GeminiFeedback {
   text?: string | null;
 }
 
+type GeminiInlineData = { data?: string; mimeType?: string; mime_type?: string };
+
 interface GeminiImagePart {
-  inlineData?: { data?: string; mimeType?: string };
+  inlineData?: GeminiInlineData;
+  inline_data?: GeminiInlineData;
   text?: string;
 }
 
@@ -63,15 +66,15 @@ export function parseGeminiImageResponse(json: unknown): { data: string; mimeTyp
 
   const candidates = Array.isArray(response.candidates) ? response.candidates : [];
   const candidateWithImage = candidates.find(candidate =>
-    candidate?.content?.parts?.some(part => part?.inlineData?.data)
+    candidate?.content?.parts?.some(part => part?.inlineData?.data || part?.inline_data?.data)
   );
   const candidate = candidateWithImage ?? candidates[0];
   const finishReason = candidate?.finishReason ?? null;
   const safetyRatings = candidate?.safetyRatings;
   const text = collectText(candidate);
 
-  const partWithImage = candidate?.content?.parts?.find(part => part?.inlineData?.data);
-  const inline = partWithImage?.inlineData;
+  const partWithImage = candidate?.content?.parts?.find(part => (part?.inlineData?.data || part?.inline_data?.data));
+  const inline = (partWithImage?.inlineData ?? partWithImage?.inline_data) as GeminiInlineData | undefined;
 
   if (!inline?.data) {
     const pieces = [
@@ -89,7 +92,7 @@ export function parseGeminiImageResponse(json: unknown): { data: string; mimeTyp
 
   return {
     data: inline.data,
-    mimeType: inline.mimeType || 'image/webp',
+    mimeType: inline.mimeType ?? inline.mime_type ?? 'image/webp',
     feedback: {
       finishReason,
       safetyRatings,

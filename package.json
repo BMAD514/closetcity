@@ -1,9 +1,10 @@
 {
   "scripts": {
     "vercel-build": "next build",
-    "build:pages": "opennextjs-cloudflare build",
+    "build:pages": "npm run build:opennext && node scripts/write-routes.js && node scripts/patch-worker.js",
     "dev": "next dev",
-    "build": "next build"
+    "build": "next build",
+    "build:opennext": "opennextjs-cloudflare build"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.8.3",

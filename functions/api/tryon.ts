@@ -27,7 +27,7 @@ export const onRequest = async (context: any) => {
       return json({ success: false, error: 'Missing required fields: modelUrl, garmentUrl, poseKey', code: 'BAD_REQUEST' }, 400);
     }
 
-    const { sha256, generateId, r2Put, fetchAsBase64 } = await import('../../src/lib/utils');
+    const { sha256, generateId, r2Put, fetchImageInlineData } = await import('../../src/lib/utils');
     const { GEMINI_API_URL, API_TIMEOUT, TRYON_PROMPT_V2, TRYON_PROMPT_V1 } = await import('../../src/lib/constants');
 
     const promptVersion = env.PROMPT_VERSION || 'v1';
@@ -73,16 +73,21 @@ export const onRequest = async (context: any) => {
     }
 
     const started = Date.now();
-    const [modelBase64, garmentBase64] = await Promise.all([
-      fetchAsBase64(modelUrl),
-      fetchAsBase64(garmentUrl),
+    const [modelInline, garmentInline] = await Promise.all([
+      fetchImageInlineData(modelUrl),
+      fetchImageInlineData(garmentUrl),
     ]);
 
     const bodyReq = {
       contents: [
-        { text: TRYON_PROMPT_V2 || TRYON_PROMPT_V1 },
-        { inlineData: { data: modelBase64, mimeType: 'image/*' } },
-        { inlineData: { data: garmentBase64, mimeType: 'image/*' } },
+        {
+          role: 'user',
+          parts: [
+            { text: TRYON_PROMPT_V2 || TRYON_PROMPT_V1 },
+            { inlineData: { data: modelInline.data, mimeType: modelInline.mimeType } },
+            { inlineData: { data: garmentInline.data, mimeType: garmentInline.mimeType } },
+          ],
+        },
       ],
     };
 
@@ -171,19 +176,24 @@ async function processTryonJob(env: any, jobId: string) {
     job.status = 'processing'; job.attempts++; job.updatedAt = Date.now();
     await env.JOBS.put(`job:${jobId}`, JSON.stringify(job));
 
-    const { fetchAsBase64, generateId, r2Put } = await import('../../src/lib/utils');
+    const { fetchImageInlineData, generateId, r2Put } = await import('../../src/lib/utils');
     const { TRYON_PROMPT_V2, TRYON_PROMPT_V1, GEMINI_API_URL, API_TIMEOUT } = await import('../../src/lib/constants');
 
-    const [modelBase64, garmentBase64] = await Promise.all([
-      fetchAsBase64(job.input.modelUrl),
-      fetchAsBase64(job.input.garmentUrl),
+    const [modelInline, garmentInline] = await Promise.all([
+      fetchImageInlineData(job.input.modelUrl),
+      fetchImageInlineData(job.input.garmentUrl),
     ]);
 
     const bodyReq = {
       contents: [
-        { text: TRYON_PROMPT_V2 || TRYON_PROMPT_V1 },
-        { inlineData: { data: modelBase64, mimeType: 'image/*' } },
-        { inlineData: { data: garmentBase64, mimeType: 'image/*' } },
+        {
+          role: 'user',
+          parts: [
+            { text: TRYON_PROMPT_V2 || TRYON_PROMPT_V1 },
+            { inlineData: { data: modelInline.data, mimeType: modelInline.mimeType } },
+            { inlineData: { data: garmentInline.data, mimeType: garmentInline.mimeType } },
+          ],
+        },
       ],
     };
 

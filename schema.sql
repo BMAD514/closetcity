@@ -40,6 +40,14 @@ CREATE TABLE IF NOT EXISTS pose_cache(
   created_at INTEGER DEFAULT (strftime('%s','now'))
 );
 
+-- Cache table for storing generated try-on composites
+CREATE TABLE IF NOT EXISTS tryon_cache(
+  cache_key TEXT PRIMARY KEY,
+  image_url TEXT NOT NULL,
+  prompt_version TEXT,
+  created_at INTEGER DEFAULT (strftime('%s','now'))
+);
+
 -- Cache table for storing generated model images
 CREATE TABLE IF NOT EXISTS model_cache(
   cache_key TEXT PRIMARY KEY,
@@ -54,6 +62,8 @@ CREATE INDEX IF NOT EXISTS idx_garments_created_at ON garments(created_at);
 CREATE INDEX IF NOT EXISTS idx_listing_media_listing_id ON listing_media(listing_id);
 CREATE INDEX IF NOT EXISTS idx_pose_cache_prompt_version ON pose_cache(prompt_version);
 CREATE INDEX IF NOT EXISTS idx_pose_cache_created_at ON pose_cache(created_at);
+CREATE INDEX IF NOT EXISTS idx_tryon_cache_prompt_version ON tryon_cache(prompt_version);
+CREATE INDEX IF NOT EXISTS idx_tryon_cache_created_at ON tryon_cache(created_at);
 CREATE INDEX IF NOT EXISTS idx_model_cache_prompt_version ON model_cache(prompt_version);
 CREATE INDEX IF NOT EXISTS idx_model_cache_created_at ON model_cache(created_at);
 

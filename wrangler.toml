@@ -1,16 +1,44 @@
 name = "closetcity"
-compatibility_date = "2024-10-01"
-compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".open-next/assets"
+compatibility_date = "2024-10-01"
+compatibility_flags = [ "nodejs_compat" ]
 
-[[d1_databases]]
-binding = "DB"
-database_name = "closet-db"
-database_id = "58aa5cb8-32e5-4ee7-8b11-55edc3d261d6"
-
-[[r2_buckets]]
-binding = "R2"
-bucket_name = "closetcity-storage"
+[placement]
+mode = "off"
 
 [vars]
 PROMPT_VERSION = "v1"
+
+[[d1_databases]]
+database_id = "58aa5cb8-32e5-4ee7-8b11-55edc3d261d6"
+binding = "DB"
+database_name = "DB"
+
+[[r2_buckets]]
+bucket_name = "closetcity-storage"
+binding = "R2"
+
+[[kv_namespaces]]
+binding = "JOBS"
+id = "fb3079a868274895b2386fcd4ad259cc"
+
+[env.production]
+
+[env.production.placement]
+mode = "smart"
+
+[env.production.vars]
+PROMPT_VERSION = "v1"
+
+[[env.production.d1_databases]]
+database_id = "58aa5cb8-32e5-4ee7-8b11-55edc3d261d6"
+binding = "DB"
+database_name = "DB"
+
+[[env.production.r2_buckets]]
+bucket_name = "closetcity-storage"
+binding = "R2"
+
+[[env.production.kv_namespaces]]
+binding = "JOBS"
+id = "fb3079a868274895b2386fcd4ad259cc"

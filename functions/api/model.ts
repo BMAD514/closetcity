@@ -27,7 +27,7 @@ export const onRequest = async (context: any) => {
       return json({ success: false, error: 'Missing required field: userImageUrl', code: 'BAD_REQUEST' }, 400);
     }
 
-    const { sha256, generateId, r2Put, fetchAsBase64 } = await import('../../src/lib/utils');
+    const { sha256, generateId, r2Put, fetchImageInlineData } = await import('../../src/lib/utils');
     const { GEMINI_API_URL, API_TIMEOUT } = await import('../../src/lib/constants');
 
     const promptVersion = env.PROMPT_VERSION || 'v1';
@@ -73,13 +73,18 @@ export const onRequest = async (context: any) => {
     }
 
     const started = Date.now();
-    const userBase64 = await fetchAsBase64(userImageUrl);
+    const userInline = await fetchImageInlineData(userImageUrl);
     const { MODEL_PROMPT_V2 } = await import('../../src/lib/constants');
 
     const bodyReq = {
       contents: [
-        { text: MODEL_PROMPT_V2 },
-        { inlineData: { data: userBase64, mimeType: 'image/*' } },
+        {
+          role: 'user',
+          parts: [
+            { text: MODEL_PROMPT_V2 },
+            { inlineData: { data: userInline.data, mimeType: userInline.mimeType } },
+          ],
+        },
       ],
     };
 
@@ -165,11 +170,21 @@ async function processModelJob(env: any, jobId: string) {
     job.status = 'processing'; job.attempts++; job.updatedAt = Date.now();
     await env.JOBS.put(`job:${jobId}`, JSON.stringify(job));
 
-    const { fetchAsBase64, generateId, r2Put } = await import('../../src/lib/utils');
+    const { fetchImageInlineData, generateId, r2Put } = await import('../../src/lib/utils');
     const { MODEL_PROMPT_V2, GEMINI_API_URL, API_TIMEOUT } = await import('../../src/lib/constants');
 
-    const userBase64 = await fetchAsBase64(job.input.userImageUrl);
-    const bodyReq = { contents: [ { text: MODEL_PROMPT_V2 }, { inlineData: { data: userBase64, mimeType: 'image/*' } } ] };
+    const userInline = await fetchImageInlineData(job.input.userImageUrl);
+    const bodyReq = {
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: MODEL_PROMPT_V2 },
+            { inlineData: { data: userInline.data, mimeType: userInline.mimeType } },
+          ],
+        },
+      ],
+    };
 
     const controller = new AbortController();
     const started = Date.now();
