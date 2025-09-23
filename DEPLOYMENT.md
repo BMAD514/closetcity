@@ -1,191 +1,120 @@
 # 🚀 Deployment Guide for closet.city
 
-## ✅ Build Status: SUCCESS
+This guide captures the exact steps required to ship the OpenNext build of closet.city to Cloudflare Pages. Follow the checklist in order — each step unlocks the next.
 
-Your closet.city application has been successfully built and is ready for deployment!
+---
 
-## 📋 Pre-Deployment Checklist
+## 1. Build the OpenNext bundle
 
-### 1. Get Google Gemini API Key
-- Go to [Google AI Studio](https://aistudio.google.com/)
-- Click "Get API Key" → "Create new API key"
-- Copy the API key (you'll need this later)
-
-### 2. Push to GitHub (Recommended)
 ```bash
-# If you haven't already, create a GitHub repository and push:
-git remote add origin https://github.com/yourusername/closetcity.git
-git push -u origin master
+npm run build:pages
 ```
 
-## 🌐 Deploy to Cloudflare Pages
+This command:
+- Runs the OpenNext Cloudflare adapter.
+- Writes `.open-next/_routes.json` (routing rules for the worker).
+- Patches the worker to use `/api/image-proxy/*` for inventory assets.
 
-### Option A: GitHub Integration (Recommended)
+The output directory `.open-next/assets` must be the Pages publish directory.
 
-1. **Go to [Cloudflare Pages](https://pages.cloudflare.com/)**
-2. **Click "Create a project"**
-3. **Connect to Git** → Select your GitHub repository
-4. **Configure build settings**:
-   - **Framework preset**: Next.js
-   - **Build command**: `npm run build`
-   - **Build output directory**: `.next`
-   - **Root directory**: `/` (leave empty)
-   - **Environment variables**: Add later
+---
 
-5. **Click "Save and Deploy"**
+## 2. Provision Cloudflare services (one-time per account)
 
-### Option B: Direct Upload
-
-1. **Go to [Cloudflare Pages](https://pages.cloudflare.com/)**
-2. **Click "Create a project"**
-3. **Choose "Upload assets"**
-4. **Zip the `.next` folder** and upload it
-5. **Set project name**: `closetcity`
-
-## ⚙️ Configure Cloudflare Services
-
-### Step 1: Create D1 Database
-
-1. **Go to Cloudflare Dashboard** → **D1**
-2. **Click "Create database"**
-3. **Name**: `closetcity-db`
-4. **Click "Create"**
-5. **Copy the Database ID** (you'll need this)
-
-### Step 2: Apply Database Schema
-
-1. **Click on your database** → **Console tab**
-2. **Copy and paste this SQL**:
-
-```sql
--- Users table
-CREATE TABLE IF NOT EXISTS users(
-  id TEXT PRIMARY KEY,
-  created_at INTEGER DEFAULT (strftime('%s','now'))
-);
-
--- Garments table
-CREATE TABLE IF NOT EXISTS garments(
-  id TEXT PRIMARY KEY,
-  owner_id TEXT,
-  title TEXT,
-  brand TEXT,
-  size TEXT,
-  image_url TEXT NOT NULL,
-  created_at INTEGER DEFAULT (strftime('%s','now')),
-  FOREIGN KEY (owner_id) REFERENCES users(id)
-);
-
--- Cache table
-CREATE TABLE IF NOT EXISTS pose_cache(
-  cache_key TEXT PRIMARY KEY,
-  image_url TEXT NOT NULL,
-  prompt_version TEXT,
-  created_at INTEGER DEFAULT (strftime('%s','now'))
-);
-
--- Indexes
-CREATE INDEX IF NOT EXISTS idx_garments_owner_id ON garments(owner_id);
-CREATE INDEX IF NOT EXISTS idx_garments_created_at ON garments(created_at);
-CREATE INDEX IF NOT EXISTS idx_pose_cache_prompt_version ON pose_cache(prompt_version);
-CREATE INDEX IF NOT EXISTS idx_pose_cache_created_at ON pose_cache(created_at);
+```bash
+npm install -g wrangler        # if not already installed
+wrangler login
+npx wrangler d1 create closetcity-db
+npx wrangler r2 bucket create closetcity-storage
+npx wrangler kv namespace create closetcity-jobs
 ```
 
-3. **Click "Execute"**
+Update `wrangler.toml` with the identifiers from the output so local and CI builds have the right bindings:
 
-### Step 3: Create R2 Bucket
+```toml
+[[d1_databases]]
+binding = "DB"
+database_name = "closetcity-db"
+database_id = "<YOUR_D1_ID>"
 
-1. **Go to Cloudflare Dashboard** → **R2 Object Storage**
-2. **Click "Create bucket"**
-3. **Name**: `closetcity-storage`
-4. **Choose location** (closest to your users)
-5. **Click "Create bucket"**
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "closetcity-storage"
 
-### Step 4: Configure Environment Variables
+[[kv_namespaces]]
+binding = "JOBS"
+id = "<YOUR_KV_ID>"
+```
 
-In your Cloudflare Pages project:
+Pages automatically reuses these bindings if the IDs are present when you deploy.
 
-1. **Go to Settings** → **Environment variables**
-2. **Add these variables**:
+---
 
-**Production Variables:**
+## 3. Load schema, seed data, and assets
+
+Apply the schema and seeds to the new D1 database:
+
+```bash
+npx wrangler d1 execute closetcity-db --file=./schema.sql
+npx wrangler d1 execute closetcity-db --file=./seeds/garments.sql
+```
+
+Upload the curated inventory images to R2 so the `/api/image-proxy/*` URLs resolve:
+
+```bash
+bash scripts/upload_inventory.sh
+# or
+pwsh scripts/upload_inventory.ps1
+```
+
+The scripts place files under `inventory/<name>.webp`, matching the proxy expectations baked into the seeds.
+
+If you want real try-on renders, process `inventory/tryon_queue.json`, upload the generated assets, and apply them with `scripts/apply_tryon_results.ps1`.
+
+---
+
+## 4. Configure environment variables & bindings in Cloudflare Pages
+
+In the Pages project settings:
+
+**Environment Variables**
 - `PROMPT_VERSION` = `v1`
 
-**Production Secrets:**
-- `GEMINI_API_KEY` = `your-gemini-api-key-here`
+**Secrets**
+- `GEMINI_API_KEY` = `<your Gemini key>`
 
-### Step 5: Configure Function Bindings
+**Function bindings**
+- D1 binding: `DB` → select the `closetcity-db` database.
+- R2 binding: `R2` → select the `closetcity-storage` bucket.
+- KV binding: `JOBS` → select the KV namespace created earlier.
 
-1. **Go to Settings** → **Functions**
-2. **Add D1 Database Binding**:
-   - **Variable name**: `DB`
-   - **D1 database**: Select `closetcity-db`
+---
 
-3. **Add R2 Bucket Binding**:
-   - **Variable name**: `R2`
-   - **R2 bucket**: Select `closetcity-storage`
+## 5. Deploy
 
-## 🧪 Test Your Deployment
+### Option A – Git integration (recommended)
+Configure the Pages build settings:
+- Build command: `npm run build:pages`
+- Build output directory: `.open-next/assets`
+- Root directory: `/` (empty)
 
-1. **Visit your Cloudflare Pages URL**
-2. **Click "Go to Dashboard"**
-3. **Try uploading a model photo**
-4. **Try uploading a garment image**
-5. **Generate a try-on result**
+Pages will run the build on every push and publish the latest `.open-next` bundle.
 
-## 🔧 Troubleshooting
+### Option B – Manual Wrangler deploy
 
-### Common Issues:
+```bash
+wrangler pages deploy .open-next --project-name closetcity --branch production
+```
 
-**"R2 storage not configured"**
-- Check R2 binding is set to variable name `R2`
-- Ensure bucket `closetcity-storage` exists
+The command uploads static assets and the worker in one shot.
 
-**"Required services not configured"**
-- Verify D1 binding is set to variable name `DB`
-- Check `GEMINI_API_KEY` is set in secrets
-- Ensure `PROMPT_VERSION` is set to `v1`
+---
 
-**"AI generation failed"**
-- Verify Gemini API key is correct and has quota
-- Check function logs in Cloudflare Pages dashboard
+## 6. Post-deploy validation
 
-**Database errors**
-- Ensure schema.sql was executed successfully
-- Check D1 database binding configuration
+1. Visit `/` and `/shop` — inventory images should load via `/api/image-proxy/...` (check the `x-inventory-proxy: hit` header).
+2. Exercise `/virtual-try-on` to confirm uploads reach R2 and that `POST /api/model`, `/api/pose`, and `/api/tryon` respond (requires a valid `GEMINI_API_KEY`).
+3. Inspect Cloudflare Pages → Functions logs for any runtime errors.
+4. Optional: run the showroom scripts against staging before updating production seeds.
 
-### View Logs:
-1. **Go to your Pages project**
-2. **Click "Functions" tab**
-3. **View real-time logs** for debugging
-
-## 🎯 Next Steps
-
-Once deployed successfully:
-
-1. **Test all functionality**
-2. **Set up custom domain** (optional)
-3. **Configure R2 custom domain** for better performance
-4. **Add user authentication** (future enhancement)
-5. **Implement real Stripe payments** (future enhancement)
-
-## 📞 Support
-
-If you encounter issues:
-- Check Cloudflare Pages function logs
-- Verify all environment variables and bindings
-- Ensure Gemini API key has sufficient quota
-- Review the main README.md for detailed API documentation
-
-## 🎉 Success!
-
-Your closet.city virtual try-on platform should now be live and functional!
-
-**Features Available:**
-- ✅ File upload (model photos & garments)
-- ✅ AI-powered virtual try-on generation
-- ✅ Pose variation generation
-- ✅ Smart caching system
-- ✅ Responsive web interface
-
-**Ready for alpha testing!** 🚀
+When all checks pass, the project is production-ready.

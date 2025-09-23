@@ -17,13 +17,10 @@
 - D1/R2 bindings wired; virtual try-on endpoints reachable (requires valid Gemini key to execute end-to-end).
 
 ## Outstanding / Needs Attention
-- Static inventory assets under `/inventory/*.webp` still 404 in production. `_routes.json` now ships with the build, and the server function proxies `/inventory/*` into ASSETS, but Cloudflare continues to surface the static 404. Investigating a worker-level override or adjusting the proxy to `/assets/inventory/*` is next.
 - Generative AI flow has not been re-tested post-migration. Needs verification that Gemini responses stream successfully and cached R2 uploads still function.
-- Optional: document new deploy runbook (`npm run build:pages` + `wrangler pages deploy .open-next --branch production`).
 - Investigate whether compatibility flags should include `nodejs_compat_v2` for future Node polyfills, though current setup works with `compatibility_date = "2024-10-01"`.
 
 ## Suggested Next Steps
-1. Debug the remaining `/inventory/*` 404 (evaluate final worker rewrite vs. adjusting assets to `/assets/inventory/*`).
-2. Once imagery resolves, run smoke tests for virtual try-on (model/pose/tryon) with a valid `GEMINI_API_KEY`.
-3. Update documentation/README with the new deployment commands and any manual steps for asset uploads.
-4. Consider staging environment deploy to validate showroom generation scripts prior to pushing new inventory.
+1. Run smoke tests for `/api/model`, `/api/pose`, and `/api/tryon` with a valid `GEMINI_API_KEY` to confirm end-to-end behaviour under the OpenNext worker.
+2. Consider staging environment deploy to validate showroom generation scripts prior to pushing new inventory.
+3. Monitor the first production deploy after the new `/api/image-proxy/*` URLs go live to confirm asset cache headers look correct.

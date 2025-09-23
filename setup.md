@@ -14,44 +14,61 @@ This guide walks you through setting up the closet.city virtual try-on platform 
 npm install
 ```
 
-## Step 2: Set Up Cloudflare D1 Database
+## Step 2: Provision Cloudflare resources
 
 1. Install Wrangler CLI (if not already installed):
 ```bash
 npm install -g wrangler
 ```
 
-2. Login to Cloudflare:
+2. Authenticate with Cloudflare:
 ```bash
 wrangler login
 ```
 
-3. Create D1 database:
+3. Create the data stores:
 ```bash
 npx wrangler d1 create closetcity-db
+npx wrangler r2 bucket create closetcity-storage
+npx wrangler kv namespace create closetcity-jobs
 ```
 
-4. Copy the database ID from the output and update `wrangler.toml`:
+4. Copy the identifiers from the output and update `wrangler.toml`:
 ```toml
 [[d1_databases]]
 binding = "DB"
 database_name = "closetcity-db"
-database_id = "YOUR_DATABASE_ID_HERE"  # Replace with actual ID
+database_id = "YOUR_DATABASE_ID_HERE" # replace with actual ID
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "closetcity-storage"
+
+[[kv_namespaces]]
+binding = "JOBS"
+id = "YOUR_KV_NAMESPACE_ID" # replace with actual ID
 ```
 
-5. Apply the database schema:
+## Step 3: Load schema & boutique seed data
+
+1. Apply the schema to the new D1 database:
 ```bash
 npx wrangler d1 execute closetcity-db --file=./schema.sql
 ```
 
-## Step 3: Set Up Cloudflare R2 Storage
-
-1. Create R2 bucket:
+2. Seed the boutique inventory (flatlay + try-on imagery) using the OpenNext-friendly URLs:
 ```bash
-npx wrangler r2 bucket create closetcity-storage
+npx wrangler d1 execute closetcity-db --file=./seeds/garments.sql
 ```
 
-2. The bucket name is already configured in `wrangler.toml`
+3. Upload the optimized inventory images so `/api/image-proxy/*` resolves in production:
+```bash
+bash scripts/upload_inventory.sh
+# or
+pwsh scripts/upload_inventory.ps1
+```
+
+> These scripts push `public/inventory/*.webp` into `inventory/<file>` in R2. Cloudflare Pages serves them through `/api/image-proxy/<file>` so the worker can set immutable caching headers.
 
 ## Step 4: Get Google Gemini API Key
 
@@ -69,18 +86,23 @@ npx wrangler r2 bucket create closetcity-storage
 3. Connect your GitHub account
 4. Select this repository
 5. Configure build settings:
-   - **Build command**: `npm run build`
-   - **Build output directory**: `dist`
+   - **Build command**: `npm run build:pages`
+   - **Build output directory**: `.open-next/assets`
    - **Root directory**: `/` (leave empty)
 
-### Option B: Direct Upload
+### Option B: Manual Wrangler Deploy
 
-1. Build the project:
+1. Build the project locally:
 ```bash
-npm run build
+npm run build:pages
 ```
 
-2. Upload the `dist` folder to Cloudflare Pages
+2. Deploy the OpenNext worker bundle:
+```bash
+wrangler pages deploy .open-next --project-name closetcity --branch production
+```
+
+> The deploy command uploads the `.open-next/assets` directory (static files) and `.open-next/worker.js` worker with the `/api/*` routes.
 
 ## Step 6: Configure Environment Variables
 
@@ -109,6 +131,10 @@ In your Cloudflare Pages dashboard:
 **R2 Bucket Binding:**
 - Variable name: `R2`
 - R2 bucket: Select `closetcity-storage`
+
+**KV Namespace Binding:**
+- Variable name: `JOBS`
+- KV namespace: Select `closetcity-jobs`
 
 ## Step 8: Test the Application
 

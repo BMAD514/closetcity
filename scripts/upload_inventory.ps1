@@ -1,4 +1,4 @@
-# Upload optimized inventory images to Cloudflare R2
+# Upload optimized inventory images to Cloudflare R2 so `/api/image-proxy/*` hits succeed
 # Requires: wrangler authenticated with closetcity project
 
 $files = @(

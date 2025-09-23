@@ -108,6 +108,10 @@ In Cloudflare Pages → Functions → Bindings, add:
 - Variable name: `R2`
 - R2 bucket: `closetcity-storage`
 
+**KV Namespace:**
+- Variable name: `JOBS`
+- KV namespace: `closetcity-jobs`
+
 
 ### Seed the boutique
 Load the curated closet data after applying the schema:
@@ -117,6 +121,13 @@ npx wrangler d1 execute closetcity-db --file=./seeds/garments.sql
 ```
 
 The seed script wipes any matching IDs and repopulates six hero pieces with flat-lay and try-on imagery so the shop, product views, and virtual styling rack feel lived-in immediately.
+
+Upload the supporting images to R2 so the `/api/image-proxy/*` URLs resolve:
+```bash
+bash scripts/upload_inventory.sh
+# or
+pwsh scripts/upload_inventory.ps1
+```
 
 ### 5. Deploy to Cloudflare Pages
 
@@ -133,10 +144,12 @@ Use Cloudflare Pages Git integration:
 npm run dev
 ```
 
-### Build for Production
+### Build for Production / Cloudflare Pages
 ```bash
-npm run build
+npm run build:pages
 ```
+
+This emits the `.open-next` worker bundle that Pages deploys via Git integration or `wrangler pages deploy`.
 
 
 ## User flow

@@ -7,7 +7,7 @@
     "size": "L",
     "condition": "Excellent",
     "price_cents": 21500,
-    "image": "/inventory/bbc.webp"
+    "image": "/api/image-proxy/bbc.webp"
   },
   {
     "id": "g-burberry-rainbow",
@@ -17,7 +17,7 @@
     "size": "M",
     "condition": "Very Good",
     "price_cents": 52000,
-    "image": "/inventory/burberry-rainbow.webp"
+    "image": "/api/image-proxy/burberry-rainbow.webp"
   },
   {
     "id": "g-burberry-tshirt",
@@ -27,7 +27,7 @@
     "size": "L",
     "condition": "Excellent",
     "price_cents": 39000,
-    "image": "/inventory/burberry-tshirt.webp"
+    "image": "/api/image-proxy/burberry-tshirt.webp"
   },
   {
     "id": "g-evolution-polo",
@@ -37,7 +37,7 @@
     "size": "M",
     "condition": "Excellent",
     "price_cents": 8900,
-    "image": "/inventory/evolution-short-sleeve-polo-shirt.webp"
+    "image": "/api/image-proxy/evolution-short-sleeve-polo-shirt.webp"
   },
   {
     "id": "g-gucci-mask",
@@ -47,7 +47,7 @@
     "size": "L",
     "condition": "Excellent",
     "price_cents": 98000,
-    "image": "/inventory/gucci-mask.webp"
+    "image": "/api/image-proxy/gucci-mask.webp"
   },
   {
     "id": "g-jw-hoodie",
@@ -57,7 +57,7 @@
     "size": "M",
     "condition": "Excellent",
     "price_cents": 55000,
-    "image": "/inventory/jw-hoodie.webp"
+    "image": "/api/image-proxy/jw-hoodie.webp"
   },
   {
     "id": "g-jwa-tee",
@@ -67,7 +67,7 @@
     "size": "L",
     "condition": "Excellent",
     "price_cents": 31000,
-    "image": "/inventory/jwa-tshirt.webp"
+    "image": "/api/image-proxy/jwa-tshirt.webp"
   },
   {
     "id": "g-balenciaga-trefoil",
@@ -77,7 +77,7 @@
     "size": "XL",
     "condition": "Good",
     "price_cents": 46000,
-    "image": "/inventory/p0.webp"
+    "image": "/api/image-proxy/p0.webp"
   },
   {
     "id": "g-paul-smith-camp",
@@ -87,7 +87,7 @@
     "size": "L",
     "condition": "Excellent",
     "price_cents": 38000,
-    "image": "/inventory/paul-smith-camp.webp"
+    "image": "/api/image-proxy/paul-smith-camp.webp"
   },
   {
     "id": "g-paul-smith-polo",
@@ -97,7 +97,7 @@
     "size": "M",
     "condition": "Excellent",
     "price_cents": 25500,
-    "image": "/inventory/paul-smith-polo.webp"
+    "image": "/api/image-proxy/paul-smith-polo.webp"
   },
   {
     "id": "g-siberia-hills",
@@ -107,7 +107,7 @@
     "size": "L",
     "condition": "Loved",
     "price_cents": 22000,
-    "image": "/inventory/siberia-hills.webp"
+    "image": "/api/image-proxy/siberia-hills.webp"
   },
   {
     "id": "g-stussy-vest",
@@ -117,6 +117,6 @@
     "size": "L",
     "condition": "Very Good",
     "price_cents": 18000,
-    "image": "/inventory/stussy-vest.webp"
+    "image": "/api/image-proxy/stussy-vest.webp"
   }
 ]
