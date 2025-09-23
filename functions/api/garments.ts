@@ -1,3 +1,16 @@
+const normalizeAssetUrl = (value, request) => {
+  if (!value) return value;
+  try {
+    const currentHost = new URL(request.url);
+    const resolved = new URL(value, currentHost);
+    if (resolved.hostname === currentHost.hostname) {
+      return resolved.pathname + resolved.search;
+    }
+    return value;
+  } catch {
+    return value.startsWith("/") ? value : `/${value}`;
+  }
+};
 export const onRequest = async (context: any) => {
   try {
     const { env, request } = context as unknown as { env: any; request: Request };
@@ -20,7 +33,7 @@ export const onRequest = async (context: any) => {
       brand: r.brand,
       title: r.title,
       price_cents: r.price_cents ?? 0,
-      image_url: r.image_url,
+      image_url: normalizeAssetUrl(r.image_url, request),
     }));
 
     return new Response(JSON.stringify({ ok: true, items }), {
@@ -44,4 +57,5 @@ export const onRequest = async (context: any) => {
     });
   }
 };
+
 

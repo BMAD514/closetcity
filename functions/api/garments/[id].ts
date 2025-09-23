@@ -1,6 +1,20 @@
+const normalizeAssetUrl = (value, requestUrl) => {
+  if (!value) return value;
+  try {
+    const base = new URL(requestUrl);
+    const resolved = new URL(value, base);
+    if (resolved.hostname === base.hostname) {
+      return resolved.pathname + resolved.search;
+    }
+    return value;
+  } catch {
+    return value.startsWith('/') ? value : `/${value}`;
+  }
+};
+
 export const onRequest = async (context: any) => {
   try {
-    const { env, params } = context as unknown as { env: any; params: { id?: string } };
+    const { env, params, request } = context as unknown as { env: any; params: { id?: string }; request: Request };
     const id = params?.id as string | undefined;
     if (!id) return new Response(JSON.stringify({ ok: false, error: 'Missing id' }), { status: 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With' } });
     if (!env.DB) return new Response(JSON.stringify({ ok: false, error: 'DB binding missing' }), { status: 500, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With' } });
@@ -21,8 +35,8 @@ export const onRequest = async (context: any) => {
     const tryon: string[] = [];
     for (const m of results) {
       const t = (m.type || '').toLowerCase();
-      if (t === 'flatlay') flatlay.push(m.url);
-      else if (t === 'tryon') tryon.push(m.url);
+      if (t === 'flatlay') flatlay.push(normalizeAssetUrl(m.url, request.url));
+      else if (t === 'tryon') tryon.push(normalizeAssetUrl(m.url, request.url));
     }
 
     return new Response(
@@ -35,7 +49,7 @@ export const onRequest = async (context: any) => {
           size: garment.size,
           condition: garment.condition ?? null,
           price_cents: garment.price_cents ?? 0,
-          image_url: garment.image_url,
+          image_url: normalizeAssetUrl(garment.image_url, request.url),
         },
         media: { flatlay, tryon },
       }),

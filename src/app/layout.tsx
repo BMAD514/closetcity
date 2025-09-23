@@ -1,24 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Mono, Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import Link from "next/link";
 
-// Run the entire app on the Edge runtime (required for Cloudflare Pages)
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const spaceMono = Space_Mono({ subsets: ["latin"], variable: "--font-space-mono", weight: ["400", "700"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const instrument = Instrument_Serif({ subsets: ["latin"], variable: "--font-instrument-serif", weight: ["400"] });
 
 export const metadata: Metadata = {
   title: "closet.city",
-  description: "Invite-only editorial resale with virtual try-on.",
+  description: "Underground artist beta. Curated garments, experimental AI fitting room.",
 };
 
 export default function RootLayout({
@@ -26,14 +20,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const year = new Date().getFullYear();
+
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black`}>
+      <body className={`${spaceMono.variable} ${inter.variable} ${instrument.variable} bg-white text-black antialiased`}>
         <Header />
-        {children}
-        <footer className="border-t border-black/10 mt-16 py-10 text-xs text-neutral-500">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            AI-assisted try-on—condition preserved; no brand affiliation.
+        <main className="min-h-[70vh]">{children}</main>
+        <footer className="border-t border-black/10 py-12">
+          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 text-xs uppercase tracking-[0.4em] text-black">
+            <span className="font-mono lowercase">closet.city © {year}</span>
+            <Link href="/manifesto" className="font-mono lowercase transition-opacity hover:opacity-70">
+              manifesto
+            </Link>
           </div>
         </footer>
       </body>

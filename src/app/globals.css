@@ -2,30 +2,40 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #0a0a0a;
+  --foreground: #000000;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-space-mono);
+  --font-serif: var(--font-instrument-serif);
 }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-feature-settings: "ss01" 1, "cv11" 1;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  letter-spacing: -0.01em;
 }
 
-/* SSENSE-like tight type scale */
-.h1 { @apply text-2xl sm:text-3xl tracking-tight; }
-.h2 { @apply text-xl sm:text-2xl tracking-tight; }
-.h3 { @apply text-lg tracking-tight; }
+a {
+  color: inherit;
+  text-decoration: none;
+}
 
-/* Links */
-a { @apply underline-offset-4 decoration-neutral-300; }
-a:hover { @apply underline; }
+a:hover {
+  text-decoration: underline;
+}
 
-/* Images */
-img { image-rendering: auto; }
+img {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: #000;
+  color: #fff;
+}

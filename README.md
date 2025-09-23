@@ -5,7 +5,7 @@ A minimal full-stack virtual try-on platform for resale fashion, built with Next
 ## 🚀 Features
 
 - **Virtual Try-On**: AI-powered garment visualization using Google Gemini
-- **Archive Storefront**: Chico.raoul-inspired merchandising with dynamic ratings, categories, and copy on the shop and product pages
+- **Guided Rack**: Curated editorial grid with AI staging, no filters or social proof
 - **Pose Generation**: Generate different poses and angles from try-on results
 - **Smart Caching**: Deterministic caching to avoid regenerating identical requests
 - **File Upload**: Secure image upload to Cloudflare R2 storage
@@ -122,8 +122,8 @@ The seed script wipes any matching IDs and repopulates six hero pieces with flat
 
 Use Cloudflare Pages Git integration:
 - Framework preset: Next.js
-- Build command: `npm run build`
-- Build output directory: `.next`
+- Build command: `npm run build:pages`
+- Build output directory: `.open-next/assets`
 - Configure bindings in Pages Settings → Functions (DB, R2) and Environment variables (PROMPT_VERSION, GEMINI_API_KEY)
 
 ## 🔧 Development

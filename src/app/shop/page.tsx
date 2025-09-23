@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
-import Container from '@/components/Container';
-import Grid from '@/components/Grid';
-import Card from '@/components/Card';
-import { getProductMeta } from '@/lib/productMeta';
+import { useEffect, useState } from "react";
+import Container from "@/components/Container";
+import Grid from "@/components/Grid";
+import Card from "@/components/Card";
 
-const RAW_API_BASE = (typeof window !== 'undefined' && window.location?.origin) || process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE || '';
-const API_BASE = RAW_API_BASE.replace(/\/$/, '');
+const RAW_API_BASE = (typeof window !== "undefined" && window.location?.origin) || process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE || "";
+const API_BASE = RAW_API_BASE.replace(/\/$/, "");
 
 function apiUrl(path: string) {
   return API_BASE ? `${API_BASE}${path}` : path;
@@ -31,19 +30,19 @@ export default function ShopPage() {
     setLoading(true);
     setError(null);
 
-    fetch(apiUrl('/api/garments'))
+    fetch(apiUrl("/api/garments"))
       .then((r) => {
-        if (!r.ok) throw new Error('Unable to load the closet.');
+        if (!r.ok) throw new Error("Closet offline");
         return r.json();
       })
       .then((data) => {
-        if (cancelled) return;
-        setItems((data.items || []) as Garment[]);
+        if (!cancelled) setItems((data.items || []) as Garment[]);
       })
       .catch((err: unknown) => {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : 'The closet is offline for a moment.');
-        setItems([]);
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Closet offline");
+          setItems([]);
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -54,42 +53,33 @@ export default function ShopPage() {
     };
   }, []);
 
-  const enriched = useMemo(
-    () => items.map((item) => ({ ...item, meta: getProductMeta(item) })),
-    [items]
-  );
-
   return (
-    <main className="bg-white">
-      <Container className="py-12">
-        <div className="mb-10 space-y-3">
-          <p className="text-xs uppercase tracking-[0.35em] text-stone-500">Closet.city archive</p>
-          <h1 className="text-3xl font-serif tracking-tight text-stone-900 md:text-4xl">All pieces in rotation</h1>
-          <p className="max-w-2xl text-sm text-stone-600 md:text-base">
-            Every item below is available for virtual try-on and purchase. Drop in, stage your fit, and take home the pieces that actually look like they belong to you.
+    <main className="bg-white text-black">
+      <Container className="py-20">
+        <div className="mb-12 space-y-4">
+          <p className="font-mono text-[10px] uppercase tracking-[0.6em] text-black/60">the rack</p>
+          <h1 className="font-serif text-4xl leading-tight md:text-5xl">Twelve pieces. No algorithm. No archive dive.</h1>
+          <p className="max-w-2xl text-sm text-black/70 md:text-base">
+            Each garment is staged for immediate AI fitting. Choose a piece, project it onto your silhouette, decide if it deserves your rotation.
           </p>
         </div>
 
         {error && !loading ? (
-          <p className="mb-8 rounded-2xl bg-stone-100 px-6 py-4 text-sm text-stone-600">{error}</p>
+          <p className="font-mono text-xs uppercase tracking-[0.4em] text-red-600">{error}</p>
         ) : null}
 
         {loading ? (
           <Grid>
-            {Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className="h-[360px] animate-pulse rounded-2xl bg-stone-100" />
-            ))}
-          </Grid>
-        ) : enriched.length ? (
-          <Grid>
-            {enriched.map((item) => (
-              <Card key={item.id} id={item.id} image={item.image_url} brand={item.brand} title={item.title} price_cents={item.price_cents} />
+            {Array.from({ length: 9 }).map((_, index) => (
+              <div key={index} className="h-[360px] animate-pulse border border-black/10 bg-black/5" />
             ))}
           </Grid>
         ) : (
-          <div className="rounded-2xl bg-stone-100 px-6 py-16 text-center text-sm text-stone-500">
-            The wardrobe is out on loan. Check back after the next drop.
-          </div>
+          <Grid>
+            {items.map((item) => (
+              <Card key={item.id} id={item.id} image={item.image_url} brand={item.brand} title={item.title} price_cents={item.price_cents} />
+            ))}
+          </Grid>
         )}
       </Container>
     </main>

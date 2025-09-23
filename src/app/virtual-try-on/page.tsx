@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 export default function Page() {
   return (
-    <main>
+    <main className="bg-white text-black">
       <VirtualTryOnApp />
     </main>
   );
