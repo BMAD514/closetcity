@@ -8,16 +8,16 @@
   - Public product APIs served via Next routes bridging to Cloudflare Pages Functions (`functions/api/*`)
   - Virtual try-on endpoints (`model`, `pose`, `tryon`, `upload`) reusing Cloudflare D1/R2 bindings
 - **Data & Storage**: Cloudflare D1 (garments table + caches), R2 (static inventory imagery)
-- **Deployment Tooling**: `opennextjs-cloudflare` build, Wrangler Pages deploy (`wrangler pages deploy .open-next ...`)
+- **Deployment Tooling**: `opennextjs-cloudflare` build, `_routes.json` emit, no-op worker patch (no `/inventory/*` rewrite), Wrangler Pages deploy (`wrangler pages deploy .open-next ...`)
 
 ## Working
 - Production domain `https://closet.city/` renders storefront, `/shop`, `/virtual-try-on`, checkout success/cancel, invite, dashboard pages.
 - API routes respond (e.g., `GET /api/garments`, `/api/garments/[id]`, `/api/model`, `/api/tryon`, `/api/orders/[id]`).
-- `npm run build:pages` now emits `.open-next/_routes.json` and patched worker code automatically before deploy.
+- `npm run build:pages` now emits `.open-next/_routes.json` and runs a no-op patch step (no `/inventory/*` rewrite).
 - D1/R2 bindings wired; virtual try-on endpoints reachable (requires valid Gemini key to execute end-to-end).
 
 ## Outstanding / Needs Attention
-- Static inventory assets under `/inventory/*.webp` still 404 in production. `_routes.json` now ships with the build, and the server function proxies `/inventory/*` into ASSETS, but Cloudflare continues to surface the static 404. Investigating a worker-level override or adjusting the proxy to `/assets/inventory/*` is next.
+- Static inventory assets under `/inventory/*.webp` may 404 in production. `_routes.json` now ships with the build and the patch step is a no-op; we do not rewrite `/inventory/*` in the worker. Serve inventory via existing public assets paths or API/R2 links instead.
 - Generative AI flow has not been re-tested post-migration. Needs verification that Gemini responses stream successfully and cached R2 uploads still function.
 - Optional: document new deploy runbook (`npm run build:pages` + `wrangler pages deploy .open-next --branch production`).
 - Investigate whether compatibility flags should include `nodejs_compat_v2` for future Node polyfills, though current setup works with `compatibility_date = "2024-10-01"`.

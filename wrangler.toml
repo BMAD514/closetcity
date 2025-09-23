@@ -12,7 +12,7 @@ PROMPT_VERSION = "v1"
 [[d1_databases]]
 database_id = "58aa5cb8-32e5-4ee7-8b11-55edc3d261d6"
 binding = "DB"
-database_name = "DB"
+database_name = "closetcity-db"
 
 [[r2_buckets]]
 bucket_name = "closetcity-storage"
@@ -33,7 +33,7 @@ PROMPT_VERSION = "v1"
 [[env.production.d1_databases]]
 database_id = "58aa5cb8-32e5-4ee7-8b11-55edc3d261d6"
 binding = "DB"
-database_name = "DB"
+database_name = "closetcity-db"
 
 [[env.production.r2_buckets]]
 bucket_name = "closetcity-storage"
