@@ -27,12 +27,30 @@ git push -u origin master
 3. **Connect to Git** → Select your GitHub repository
 4. **Configure build settings**:
    - **Framework preset**: Next.js
-   - **Build command**: `npm run build`
-   - **Build output directory**: `.next`
+   - **Build command**: `npm run build:pages`
+   - **Build output directory**: `.open-next/assets`
    - **Root directory**: `/` (leave empty)
    - **Environment variables**: Add later
 
 5. **Click "Save and Deploy"**
+
+
+## 🏗️ Build the OpenNext bundle
+
+This project deploys to Cloudflare Pages using OpenNext.
+
+- Build entrypoint: `npm run build:pages`
+  - Runs `opennextjs-cloudflare build` to emit the worker and assets under `.open-next/`
+  - Writes a `_routes.json` manifest via `scripts/write-routes.js`
+  - Executes a no-op patch step (`scripts/patch-worker.js`) — we no longer rewrite `/inventory/*` in the worker. Static inventory is served via existing routes/APIs.
+- Output directory for Pages: `.open-next/assets`
+- Ensure Node.js compatibility is enabled in Pages (nodejs_compat) for both Preview and Production.
+
+Deploy via Pages Git integration (recommended) using the build command/output above, or deploy manually with Wrangler:
+
+```bash
+wrangler pages deploy .open-next --branch production
+```
 
 ### Option B: Direct Upload
 

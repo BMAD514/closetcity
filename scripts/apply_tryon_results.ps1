@@ -11,7 +11,7 @@ if (!(Test-Path $ResultsFile)) {
 }
 
 $entries = Get-Content $ResultsFile | ConvertFrom-Json
-$dataset = 'closet-db'
+$dataset = 'closetcity-db'
 $target = if ($Local) { '--local' } else { '--remote' }
 
 foreach ($entry in $entries) {

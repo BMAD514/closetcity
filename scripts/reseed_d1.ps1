@@ -4,7 +4,7 @@ param(
     [switch]$Local
 )
 
-$dataset = 'closet-db'
+$dataset = 'closetcity-db'
 $command = "npx wrangler d1 execute $dataset --file=seeds/garments.sql"
 if ($Local) {
     $command += ' --local'
