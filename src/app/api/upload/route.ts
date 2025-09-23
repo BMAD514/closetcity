@@ -1,27 +1,25 @@
-import { NextRequest } from 'next/server';
-import { getRequestContext } from '@cloudflare/next-on-pages';
-import { onRequest as uploadHandler } from '../../../../functions/api/upload';
+import { NextRequest } from "next/server";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { onRequest as uploadHandler } from "../../../../functions/api/upload";
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
-const adaptRequest = (request: NextRequest) => {
-  const context = getRequestContext() as any;
+async function adaptRequest(request: NextRequest) {
+  const { env, ctx } = await getCloudflareContext({ async: true });
   const waitUntil = (promise: Promise<unknown>) => {
-    if (typeof context.waitUntil === 'function') {
-      context.waitUntil(promise);
-    } else if (context.ctx && typeof context.ctx.waitUntil === 'function') {
-      context.ctx.waitUntil(promise);
+    if (typeof ctx?.waitUntil === "function") {
+      ctx.waitUntil(promise);
     }
   };
 
   return uploadHandler({
     request,
-    env: context.env,
+    env,
     waitUntil,
   });
-};
+}
 
-export function OPTIONS(request: NextRequest) {
+export async function OPTIONS(request: NextRequest) {
   return adaptRequest(request);
 }
 

@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 
 // Run the entire app on the Edge runtime (required for Cloudflare Pages)
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

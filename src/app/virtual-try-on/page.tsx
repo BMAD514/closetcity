@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 import VirtualTryOnApp from '@/features/virtualtryon/app';
 
 export const dynamic = 'force-dynamic';

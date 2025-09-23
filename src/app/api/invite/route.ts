@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Env } from '@/lib/types';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   const env = process.env as unknown as Env;
