@@ -6,11 +6,13 @@ export const onRequest = async (context: any) => {
       hasDB: !!env.DB,
       hasR2: !!env.R2,
       hasAI: !!env.AI,
+      hasCloudflareToken: !!env.CLOUDFLARE_API_TOKEN,
       hasGeminiKey: !!env.GEMINI_API_KEY,
       hasJobs: !!env.JOBS,
       promptVersion: env.PROMPT_VERSION,
       // Don't log actual keys for security
       geminiKeyLength: env.GEMINI_API_KEY ? env.GEMINI_API_KEY.length : 0,
+      cloudflareTokenLength: env.CLOUDFLARE_API_TOKEN ? env.CLOUDFLARE_API_TOKEN.length : 0,
       // Debug: list all available env keys (without values)
       availableEnvKeys: Object.keys(env).sort(),
     };

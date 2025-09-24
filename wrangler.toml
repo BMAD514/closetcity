@@ -26,6 +26,9 @@ binding = "R2"
 binding = "JOBS"
 id = "fb3079a868274895b2386fcd4ad259cc"
 
+[ai]
+binding = "AI"
+
 [env.production]
 
 [env.production.placement]
