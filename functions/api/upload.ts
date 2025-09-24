@@ -33,13 +33,19 @@ export const onRequest = async (context: any) => {
       return new Response(JSON.stringify({ success: false, error: 'File size must be less than 8MB', code: 'BAD_REQUEST', url: '' }), { status: 400, headers: { 'Content-Type': 'application/json', ...cors } as any });
     }
 
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      return new Response(JSON.stringify({ success: false, error: 'File must be a JPEG, PNG, or WebP image', code: 'BAD_REQUEST', url: '' }), { status: 400, headers: { 'Content-Type': 'application/json', ...cors } as any });
+    console.log('Upload debug - file.type:', file.type, 'file.name:', file.name, 'allowed types:', ALLOWED_IMAGE_TYPES);
+
+    // Check MIME type, but also fall back to file extension for browser compatibility
+    const extension = (file.name.split('.').pop() || '').toLowerCase();
+    const isValidType = ALLOWED_IMAGE_TYPES.includes(file.type) ||
+                       ['jpg', 'jpeg', 'png', 'webp'].includes(extension);
+
+    if (!isValidType) {
+      return new Response(JSON.stringify({ success: false, error: `File must be a JPEG, PNG, or WebP image. Received: ${file.type} (${extension})`, code: 'BAD_REQUEST', url: '' }), { status: 400, headers: { 'Content-Type': 'application/json', ...cors } as any });
     }
 
     const fileId = generateId();
-    const extension = (file.name.split('.').pop() || 'jpg').toLowerCase();
-    const filename = `${kind}/${fileId}.${extension}`;
+    const filename = `${kind}/${fileId}.${extension || 'jpg'}`;
 
     const arrayBuffer = await file.arrayBuffer();
 
