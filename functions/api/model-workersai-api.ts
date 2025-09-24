@@ -61,8 +61,8 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
 
     console.log('🎨 Generating studio model with Workers AI API...');
 
-    // Get account ID from the API token (you might need to provide this)
-    const accountId = 'YOUR_ACCOUNT_ID'; // We'll need to get this from you
+    // Cloudflare Account ID
+    const accountId = 'b25240d49b7133162450bc235ba623e4';
 
     const aiResponse = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/@cf/runwayml/stable-diffusion-v1-5-img2img`, {
       method: 'POST',
