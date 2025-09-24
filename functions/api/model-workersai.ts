@@ -57,21 +57,17 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
     const imageBuffer = await imageResponse.arrayBuffer();
     const imageArray = new Uint8Array(imageBuffer);
 
-    // Use Workers AI for image processing
-    // For now, let's use a text-to-image model to create a "studio model" version
-    const prompt = `Create a clean, professional studio portrait of a person suitable for virtual try-on fashion. 
-    The image should have:
-    - Clean white or neutral background
-    - Professional lighting
-    - Person standing straight, facing forward
-    - Suitable for clothing overlay
-    - High quality, realistic style`;
+    // Use Workers AI img2img for creating a clean studio model
+    const prompt = `Professional studio portrait, clean white background, fashion model pose, high quality photography, studio lighting, suitable for virtual try-on, realistic, detailed`;
 
-    console.log('🎨 Generating studio model with Workers AI...');
+    console.log('🎨 Generating studio model with Workers AI img2img...');
 
-    const aiResponse = await env.AI.run('@cf/bytedance/stable-diffusion-xl-lightning', {
+    // Use img2img to transform the uploaded photo into a clean studio model
+    const aiResponse = await env.AI.run('@cf/runwayml/stable-diffusion-v1-5-img2img', {
       prompt: prompt,
-      num_steps: 4, // Lightning model is optimized for fewer steps
+      image: imageArray,
+      strength: 0.7, // How much to transform the original image (0.0 = no change, 1.0 = completely new)
+      num_inference_steps: 20,
     });
 
     if (!aiResponse) {

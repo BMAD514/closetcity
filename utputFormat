@@ -1,0 +1,13 @@
+HTTP/1.1 405 Method Not Allowed
+Date: Wed, 24 Sep 2025 16:39:33 GMT
+Content-Length: 0
+Connection: keep-alive
+cf-cache-status: DYNAMIC
+Access-Control-Allow-Origin: *
+Vary: Origin, Accept-Encoding
+referrer-policy: strict-origin-when-cross-origin
+Report-To: {"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=A4rUc0UEQ1XdEq%2BEUI7db62c%2Fz2PIEO2p59V%2FdFBn5L7hr1Df23P1sVcPXKKoE6BCbXjzy7kv5gzEqbUShRaY0e%2FgqLRk2d8oByAUc4bewVDMph0hJrSK%2B0nddct3ljrMOMaLjCkhvy8aQ%3D%3D"}],"group":"cf-nel","max_age":604800}
+NEL: {"success_fraction":0,"report_to":"cf-nel","max_age":604800}
+Server: cloudflare
+CF-RAY: 9843b7f0af57b687-YYZ
+
