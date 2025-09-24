@@ -2,6 +2,8 @@
 
 A minimal full-stack virtual try-on platform for resale fashion, built with Next.js and Cloudflare services.
 
+<!-- Deploy trigger: 2025-09-24 13:55 -->
+
 ## 🚀 Features
 
 - **Virtual Try-On**: AI-powered garment visualization using Google Gemini
