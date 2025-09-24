@@ -69,18 +69,19 @@ npx wrangler r2 bucket create closetcity-storage
 3. Connect your GitHub account
 4. Select this repository
 5. Configure build settings:
-   - **Build command**: `npm run build`
-   - **Build output directory**: `dist`
-   - **Root directory**: `/` (leave empty)
+   - Build command: `npm run build:pages`
+   - Build output directory: `.open-next/assets`
+   - Root directory: `/` (leave empty)
+   - Compatibility flag: enable `nodejs_compat` for both Preview and Production
 
 ### Option B: Direct Upload
 
-1. Build the project:
+1. Build the OpenNext bundle:
 ```bash
-npm run build
+npm run build:pages
 ```
 
-2. Upload the `dist` folder to Cloudflare Pages
+2. Upload the `.open-next/assets` folder to Cloudflare Pages
 
 ## Step 6: Configure Environment Variables
 
@@ -109,6 +110,10 @@ In your Cloudflare Pages dashboard:
 **R2 Bucket Binding:**
 - Variable name: `R2`
 - R2 bucket: Select `closetcity-storage`
+
+**KV Namespace (Jobs) Binding:**
+- Variable name: `JOBS`
+- KV namespace: Select `closetcity-jobs` (create if missing)
 
 ## Step 8: Test the Application
 

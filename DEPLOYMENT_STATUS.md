@@ -10,20 +10,34 @@
 - **Data & Storage**: Cloudflare D1 (garments table + caches), R2 (static inventory imagery)
 - **Deployment Tooling**: `opennextjs-cloudflare` build, `_routes.json` emit, no-op worker patch (no `/inventory/*` rewrite), Wrangler Pages deploy (`wrangler pages deploy .open-next ...`)
 
+## Deploy Checklist (operators)
+- Build: `npm run build:pages` → publish `.open-next/assets`; enable `nodejs_compat` in Pages (Preview + Production)
+- Bindings (Pages → Functions → Bindings):
+  - D1: `DB` → database `closetcity-db` (ensure correct `database_id`)
+  - R2: `R2` → bucket `closetcity-storage`
+  - KV: `JOBS` → namespace `closetcity-jobs`
+- Inventory upload to R2: `pwsh scripts/upload_inventory.ps1` or `bash scripts/upload_inventory.sh` (keys under `inventory/<file>`)
+- Database:
+  - Apply schema once; reseed as needed: `pwsh scripts/reseed_d1.ps1` (use `-Local` for local)
+- Verify:
+  - `/api/garments` returns items
+  - `/api/image-proxy/bbc.webp` returns 200 with `x-inventory-proxy` header
+- Optional manual deploy: `wrangler pages deploy .open-next --branch production`
+
 ## Working
-- Production domain `https://closet.city/` renders storefront, `/shop`, `/virtual-try-on`, checkout success/cancel, invite, dashboard pages.
-- API routes respond (e.g., `GET /api/garments`, `/api/garments/[id]`, `/api/model`, `/api/tryon`, `/api/orders/[id]`).
-- `npm run build:pages` now emits `.open-next/_routes.json` and runs a no-op patch step (no `/inventory/*` rewrite).
-- D1/R2 bindings wired; virtual try-on endpoints reachable (requires valid Gemini key to execute end-to-end).
+- OpenNext build: `npm run build:pages` emits `.open-next/assets` and `_routes.json`; worker patch step is a no-op (no `/inventory/*` rewrite).
+- D1 reseed verified locally against `closetcity-db` via `scripts/reseed_d1.ps1 -Local` (8 commands executed successfully).
+- `/api/image-proxy/<file>` implemented to serve from ASSETS first, with fallback to R2 at `inventory/<file>`.
+- API routes respond (`/api/garments`, `/api/garments/[id]`, `/api/model`, `/api/tryon`, `/api/pose`, `/api/upload`); generation requires valid `GEMINI_API_KEY`.
 
 ## Outstanding / Needs Attention
-- Static inventory assets under `/inventory/*.webp` may 404 in production. `_routes.json` now ships with the build and the patch step is a no-op; we do not rewrite `/inventory/*` in the worker. Serve inventory via existing public assets paths or API/R2 links instead.
-- Generative AI flow has not been re-tested post-migration. Needs verification that Gemini responses stream successfully and cached R2 uploads still function.
-- Optional: document new deploy runbook (`npm run build:pages` + `wrangler pages deploy .open-next --branch production`).
-- Investigate whether compatibility flags should include `nodejs_compat_v2` for future Node polyfills, though current setup works with `compatibility_date = "2024-10-01"`.
+- Cloudflare Pages project likely still using pre-OpenNext settings. Update Build command to `npm run build:pages`, Output to `.open-next/assets`, enable `nodejs_compat`, bind `DB`/`R2`/`JOBS`, then redeploy. Until then, `/api/image-proxy/<file>` may 404.
+- After redeploy, verify `/api/image-proxy/bbc.webp` returns 200 and shows `x-inventory-proxy` header (`hit-assets` or `hit-r2`). If 404, ensure R2 objects exist under `inventory/<file>`.
+- Re-test model/try-on/pose in production with a valid `GEMINI_API_KEY` and confirm R2 uploads + cache writes succeed.
 
 ## Suggested Next Steps
-1. Debug the remaining `/inventory/*` 404 (evaluate final worker rewrite vs. adjusting assets to `/assets/inventory/*`).
-2. Once imagery resolves, run smoke tests for virtual try-on (model/pose/tryon) with a valid `GEMINI_API_KEY`.
-3. Update documentation/README with the new deployment commands and any manual steps for asset uploads.
-4. Consider staging environment deploy to validate showroom generation scripts prior to pushing new inventory.
+1. Flip Cloudflare Pages build settings to `npm run build:pages` + `.open-next/assets`; enable `nodejs_compat`; confirm DB/R2/JOBS bindings.
+2. Redeploy (Git-based or `wrangler pages deploy .open-next --branch production`).
+3. Spot-check `/api/garments` and `/api/image-proxy/bbc.webp`.
+4. Reseed remote DB if needed and upload inventory to R2 (`scripts/upload_inventory.*`).
+5. Run an end-to-end try-on and verify outputs are written to R2 and referenced via `/api/image-proxy/...`.

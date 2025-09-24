@@ -7,7 +7,7 @@
     "size": "L",
     "condition": "Excellent",
     "price_cents": 21500,
-    "image": "/inventory/bbc.webp"
+    "image": "/api/image-proxy/bbc.webp"
   },
   {
     "id": "g-burberry-rainbow",

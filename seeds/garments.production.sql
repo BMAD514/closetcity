@@ -6,7 +6,7 @@ INSERT OR IGNORE INTO users (id) VALUES ('brent');
 
 INSERT INTO garments (id, owner_id, title, brand, size, condition, price_cents, image_url)
 VALUES
-  ('g-bbc','brent','Astro Logo Hoodie','Billionaire Boys Club','L','Excellent',21500,'/inventory/bbc.webp'),
+  ('g-bbc','brent','Astro Logo Hoodie','Billionaire Boys Club','L','Excellent',21500,'/api/image-proxy/bbc.webp'),
   ('g-burberry-rainbow','brent','Rainbow Vintage Check Shirt','Burberry','M','Very Good',52000,'/inventory/burberry-rainbow.webp'),
   ('g-burberry-tshirt','brent','Mythic Siren Graphic Tee','Burberry','L','Excellent',39000,'/inventory/burberry-tshirt.webp'),
   ('g-evolution-polo','brent','Evolution Short-Sleeve Polo','Lululemon','M','Excellent',8900,'/inventory/evolution-short-sleeve-polo-shirt.webp'),

@@ -1,7 +1,7 @@
 [
   {
     "garment_id": "g-bbc",
-    "garment_url": "https://closet.city/inventory/bbc.webp",
+    "garment_url": "https://closet.city/api/image-proxy/bbc.webp",
     "output_placeholder": "https://closet.city/inventory/tryon/bbc-look.webp"
   },
   {

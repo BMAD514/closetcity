@@ -108,6 +108,10 @@ In Cloudflare Pages → Functions → Bindings, add:
 - Variable name: `R2`
 - R2 bucket: `closetcity-storage`
 
+**KV Namespace (Jobs):**
+- Variable name: `JOBS`
+- KV namespace: `closetcity-jobs`
+
 
 ### Seed the boutique
 Load the curated closet data after applying the schema:

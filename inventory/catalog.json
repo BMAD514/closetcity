@@ -2,7 +2,7 @@
   {
     "source": "BBC.jpg",
     "slug": "bbc",
-    "path": "/inventory/bbc.webp",
+    "path": "/api/image-proxy/bbc.webp",
     "width": 1166,
     "height": 1400,
     "filesize_kb": 81.7
