@@ -33,10 +33,12 @@ mode = "smart"
 
 [env.production.vars]
 PROMPT_VERSION = "v1"
+# GEMINI_API_KEY = "your-key-here"  # Uncomment and add your key for testing
 
 # Note: Secrets (GEMINI_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET)
 # should be set in Cloudflare Pages Dashboard → Settings → Environment Variables
 # as "Encrypted" variables for the Production environment
+# If free tier has limitations, you may need to add GEMINI_API_KEY directly above
 
 [[env.production.d1_databases]]
 database_id = "58aa5cb8-32e5-4ee7-8b11-55edc3d261d6"
@@ -50,3 +52,6 @@ binding = "R2"
 [[env.production.kv_namespaces]]
 binding = "JOBS"
 id = "fb3079a868274895b2386fcd4ad259cc"
+
+[env.production.ai]
+binding = "AI"

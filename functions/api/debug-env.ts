@@ -5,6 +5,7 @@ export const onRequest = async (context: any) => {
     const envCheck = {
       hasDB: !!env.DB,
       hasR2: !!env.R2,
+      hasAI: !!env.AI,
       hasGeminiKey: !!env.GEMINI_API_KEY,
       hasJobs: !!env.JOBS,
       promptVersion: env.PROMPT_VERSION,
