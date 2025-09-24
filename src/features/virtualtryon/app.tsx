@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
 import * as API from './lib/api';
 import type { GenerationMeta, StatusMessage, StatusTone, WardrobeItem, OutfitLayer } from './types';
 import StartScreen from './components/StartScreen';
@@ -30,8 +29,6 @@ export default function VirtualTryOnApp() {
   const [status, setStatus] = useState<StatusMessage | null>(null);
   const autoTriedRef = useRef(false);
   const statusTimer = useRef<number | null>(null);
-  const params = useSearchParams();
-
   const announce = useCallback((tone: StatusTone, message: string, persist = false) => {
     if (typeof window !== 'undefined') {
       if (statusTimer.current) {
@@ -100,9 +97,11 @@ export default function VirtualTryOnApp() {
 
   // Read garmentUrl from search params on mount
   useEffect(() => {
-    const url = params.get('garmentUrl');
-    if (url) setGarmentFromProduct(url);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const url = urlParams.get('garmentUrl');
+      if (url) setGarmentFromProduct(url);
+    }
   }, []);
 
   // Prepend "From product" garment if not already present

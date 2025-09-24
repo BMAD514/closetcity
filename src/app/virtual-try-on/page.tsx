@@ -1,7 +1,4 @@
-export const runtime = 'nodejs';
 import VirtualTryOnApp from '@/features/virtualtryon/app';
-
-export const dynamic = 'force-dynamic';
 
 export default function Page() {
   return (

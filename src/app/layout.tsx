@@ -4,8 +4,6 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Link from "next/link";
 
-export const runtime = "nodejs";
-
 const spaceMono = Space_Mono({ subsets: ["latin"], variable: "--font-space-mono", weight: ["400", "700"] });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const instrument = Instrument_Serif({ subsets: ["latin"], variable: "--font-instrument-serif", weight: ["400"] });

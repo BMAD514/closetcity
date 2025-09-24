@@ -57,7 +57,7 @@ wrangler pages deploy .open-next --branch production
 1. **Go to [Cloudflare Pages](https://pages.cloudflare.com/)**
 2. **Click "Create a project"**
 3. **Choose "Upload assets"**
-4. **Zip the `.next` folder** and upload it
+4. **Upload the `.open-next/assets` folder**
 5. **Set project name**: `closetcity`
 
 ## ⚙️ Configure Cloudflare Services
@@ -142,6 +142,10 @@ In your Cloudflare Pages project:
 3. **Add R2 Bucket Binding**:
    - **Variable name**: `R2`
    - **R2 bucket**: Select `closetcity-storage`
+
+4. **Add KV Namespace (Jobs) Binding**:
+   - **Variable name**: `JOBS`
+   - **KV namespace**: Select `closetcity-jobs` (create if missing)
 
 ## 🧪 Test Your Deployment
 
