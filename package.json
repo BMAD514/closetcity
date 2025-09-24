@@ -2,8 +2,10 @@
   "scripts": {
     "vercel-build": "next build",
     "build:pages": "npm run build:opennext && node scripts/write-routes.js && node scripts/patch-worker.js",
+    "build:static": "npm run build && node scripts/build-static.js",
     "dev": "next dev",
     "build": "next build",
+    "export": "next export",
     "build:opennext": "opennextjs-cloudflare build"
   },
   "devDependencies": {
