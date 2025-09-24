@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import type { Env } from "../../../../lib/types";
 
 type RouteContext =
   | { params?: { path?: string[] } }
@@ -22,24 +23,34 @@ async function serveAsset(req: NextRequest, segments: string[]) {
   }
 
   const { env } = await getCloudflareContext({ async: true });
+  const typedEnv = env as unknown as Env;
 
   // 1) Try static asset bundle first (OpenNext ASSETS)
-  const assetPath = `/assets/inventory/${segments.join("/")}`;
-  const assetUrl = new URL(assetPath, req.url);
-  const assetRequest = new Request(assetUrl.toString(), req);
-  const assetResponse = await env.ASSETS?.fetch(assetRequest);
-  if (assetResponse && assetResponse.status !== 404) {
-    const headers = new Headers(assetResponse.headers);
-    headers.set("x-inventory-proxy", "hit-assets");
-    headers.set("Cache-Control", "public, max-age=31536000, immutable");
-    return new NextResponse(assetResponse.body, { status: assetResponse.status, headers });
+  const tryAsset = async (path: string) => {
+    const assetUrl = new URL(path, req.url);
+    const assetRequest = new Request(assetUrl.toString(), req);
+    const res = await (env as any).ASSETS?.fetch(assetRequest);
+    if (res && res.status !== 404) {
+      const headers = new Headers(res.headers);
+      headers.set("x-inventory-proxy", "hit-assets");
+      headers.set("Cache-Control", "public, max-age=31536000, immutable");
+      return new NextResponse(res.body, { status: res.status, headers });
+    }
+    return null;
+  };
+
+  // Try without /assets prefix (most Pages setups)
+  let served = await tryAsset(`/inventory/${segments.join("/")}`);
+  if (!served) {
+    // Try with /assets prefix (some OpenNext setups)
+    served = await tryAsset(`/assets/inventory/${segments.join("/")}`);
   }
+  if (served) return served;
 
   // 2) Fallback to R2 object at inventory/<file>
   try {
     const r2Key = `inventory/${segments.join("/")}`;
-    // @ts-ignore env.R2 is provided at runtime
-    const object = await env.R2?.get(r2Key);
+    const object = await typedEnv.R2?.get(r2Key);
     if (object) {
       const contentType = object.httpMetadata?.contentType || 'image/webp';
       const headers = new Headers({
