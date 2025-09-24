@@ -1,4 +1,13 @@
-import { json } from '../../src/lib/utils';
+// Helper function to create JSON responses
+function json(data: any, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
+}
 
 interface Env {
   DB: any;
