@@ -34,6 +34,10 @@ mode = "smart"
 [env.production.vars]
 PROMPT_VERSION = "v1"
 
+# Note: Secrets (GEMINI_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET)
+# should be set in Cloudflare Pages Dashboard → Settings → Environment Variables
+# as "Encrypted" variables for the Production environment
+
 [[env.production.d1_databases]]
 database_id = "58aa5cb8-32e5-4ee7-8b11-55edc3d261d6"
 binding = "DB"

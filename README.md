@@ -2,7 +2,7 @@
 
 A minimal full-stack virtual try-on platform for resale fashion, built with Next.js and Cloudflare services.
 
-<!-- Deploy trigger: 2025-09-24 13:55 -->
+<!-- Deploy trigger: 2025-09-24 14:10 - force env vars -->
 
 ## 🚀 Features
 
